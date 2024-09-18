@@ -1,0 +1,935 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Roteador</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI semibold';
+            background-color: #f8f9fa;
+            background-image: url('https://4kwallpapers.com/images/walls/thumbs_3t/15386.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: repeat;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .container {
+            display: flex;
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        .tabs {
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #dee2e6;
+            padding-right: 4px;
+            background-color: rgba(255, 255, 255, 0.8);
+            margin-right: 15px;
+            border-radius: 8px;
+        }
+        .tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-right: none;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.8);
+            transition: background-color 0.4s, transform 0.4s;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        .tab:hover {
+            background-color: #d0e7ff;
+            transform: scale(1.2);
+        }
+        .tab.active {
+            background-color: #ffffff;
+            font-weight: bold;
+            border-left: 4px solid #007bff;
+            border-right: 4px solid #007bff;
+        }
+        .tab:focus {
+            outline: none;
+            background-color: #d0e7ff;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            flex-grow: 1;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .status-item {
+            margin-bottom: 10px;
+        }
+        .status-image {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            margin-bottom: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #80bdff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+        }
+        .pppoe-fields, .wifi-password-field, .guest-password-field {
+            display: none;
+        }
+        .dark-mode {
+            background-color: #343a40;
+            color: #f8f9fa;
+        }
+        .dark-mode .container {
+            background-color: #454d55;
+        }
+        .dark-mode .tab {
+            background-color: #495057;
+            border-color: #6c757d;
+        }
+        .dark-mode .tab.active {
+            background-color: #343a40;
+            border-left-color: #007bff;
+        }
+        .dark-mode .form-group input,
+        .dark-mode .form-group select,
+        .dark-mode .form-group textarea {
+            background-color: #495057;
+            border-color: #6c757d;
+            color: #f8f9fa;
+        }
+        .dark-mode .form-group input::placeholder,
+        .dark-mode .form-group textarea::placeholder {
+            color: #adb5bd;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #000000;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .header img {
+            width: 150px;
+            height: 50px;
+            margin-right: 10px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+            transform: scale(1.1);
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+            transform: scale(1.1);
+        }
+        /* Efeito hover para as abas */
+        .tab:hover {
+            background-color: #d0e7ff;
+            transition: background-color 0.4s;
+        }
+        /* Efeito hover para os botões */
+        .btn:hover {
+            opacity: 0.8;
+            transition: opacity 0.3s;
+            transform: scale(1.1);
+        }
+        /* Efeito hover para o botão de alternância do modo escuro */
+        #toggleDarkMode:hover {
+            background-color: #ccc;
+            color: #000;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        /* Efeito hover para os itens da lista bloqueada */
+        #blockedDevicesList li:hover {
+            background-color: #f0f0f0;
+            cursor: pointer;
+        }
+        /* Efeito hover para os botões de desbloquear na lista bloqueada */
+        #blockedDevicesList button:hover {
+            background-color: #ddd;
+            transition: background-color 0.3s;
+        }
+        /* Estilos para a tela de login */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url('https://4kwallpapers.com/images/walls/thumbs_3t/17730.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: repeat;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        .login-form {
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .login-form h2 {
+            margin-bottom: 20px;
+        }
+        .login-form input {
+            margin-bottom: 15px;
+        }
+        .login-form img {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+        /* Estilo para o botão de ajuda */
+        .help-button {
+            display: block;
+            margin: 20px auto 0;
+            padding: 5px 10px;
+            font-size: 14px;
+            color: #007bff;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .help-button:hover {
+            color: #0056b3;
+            transform: scale(1.1);
+        }
+        table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Consolas Black, sans-serif;
+        margin: 10px 0;
+        border-radius: 4px;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: Center;
+        border-bottom: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    th {
+        background-color: #007bff;
+        color: white;
+        border-radius: 4px;
+    }
+
+    tr:hover {
+        background-color: #979797;
+    }
+
+    td {
+        color: #333;
+        border-radius: 4px;
+    }
+    .logout-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 4px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.logout-button:hover {
+    background-color: #d32f2f;
+    transform: scale(1.1)
+}
+    </style>
+</head>
+<body>
+    <!-- Tela de login -->
+    <div class="login-container" id="login-container">
+        <div class="login-form">
+            <h2>RS 1700 Mesh 📶</h2>
+            <h3>Feito por Rodrigo S.⚡</h3>
+            <form id="login-form">
+                <img src="https://cdn-icons-gif.flaticon.com/8717/8717908.gif" alt="GIF de boas-vindas">
+                <div class="form-group">
+                    <label for="welcome">Bem-vindo à página de configuração do seu roteador!
+</label>
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" class="form-control" placeholder="Digite a senha">
+                </div>
+                <button type="submit" class="btn btn-primary">Entrar</button>
+                <div id="login-error" class="text-danger mt-2"></div>
+            </form>
+            <button class="help-button" title="Se você esquecer sua senha, você pode restaurar as configurações de fábrica. Senha Padrão: GbsNet9009">Esqueci minha senha</button>
+        </div>
+    </div>
+</body>
+    <!-- Cabeçalho -->
+<div class="header">
+    <img src="https://www.gbsn.com.br/gbs/assets/images/loader/logo.png" alt="Logo">
+    <span>Versão 2.8.5<span> 
+    <div>Por Rodrigo S.⚡ (todos os direitos reservados)®️</div>
+    <button class="logout-button" onclick="location.reload();">Sair</button>
+</div>
+
+    <!-- Conteúdo principal -->
+    <div class="container">
+        <nav class="tabs" role="tablist">
+    <div class="tab active" data-tab="status" aria-controls="status" role="tab" tabindex="0">📄 Status</div>
+    <div class="tab" data-tab="internet" aria-controls="internet" role="tab" tabindex="0">📈 Internet / WAN</div>
+    <div class="tab" data-tab="wifi" aria-controls="wifi" role="tab" tabindex="0">📶 WiFi</div>
+    <div class="tab" data-tab="visitantes" aria-controls="visitantes" role="tab" tabindex="0">📱 Rede Visitante</div>
+    <div class="tab" data-tab="firewall" aria-controls="firewall" role="tab" tabindex="0">🛡️ Firewall</div>
+    <div class="tab" data-tab="controle-parental" aria-controls="controle-parental" role="tab" tabindex="0">👨‍👩‍👧‍👦 Controle Parental</div>
+    <div class="tab" data-tab="stats" aria-controls="stats" role="tab" tabindex="0">📊 Estatísticas</div>
+    <div class="tab" data-tab="configuracoes" aria-controls="configuracoes" role="tab" tabindex="0">⚙️ Configurações</div>
+</nav>
+
+<section class="tab-content" id="controle-parental" role="tabpanel">
+    <h2>Controle Parental 👨‍👩‍👧‍👦</h2>
+    <form onsubmit="validateParentalControlForm(event)">
+        <div class="form-group">
+            <label for="wifiBandwidth">Ativar / Desativar</label>
+<select id="parentalControlStatus">
+    <option value="yes">Ativar</option>
+    <option value="No">Desativar</option>
+        </div>
+        <div class="form-group">
+            <label for="accessControl">Controle de Acesso:</label>
+            <textarea id="accessControl" name="accessControl" rows="2" placeholder="Digite os dispositivos e horários de acesso, ex.: 192.168.1.10, 08:00-18:00"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="restrictedSites">Sites Restritos</label>
+            <textarea id="restrictedSites" placeholder="Adicione URLs separadas por vírgula" rows="4"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+    </form>
+</section>
+
+<section class="tab-content active" id="status" role="tabpanel">
+    <h2>Status 📄</h2>
+    <img src="https://tic-cms-prod-br.s3.amazonaws.com/originals/wifi.gif" alt="Imagem de Status" class="status-image">
+    <div class="status-item">
+        <strong>Tempo ativo do sistema 🕐:</strong> <span id="uptime">00:00:00</span>
+    </div>
+    <div class="status-item">
+        <strong>Versão de firmware:</strong> 2.8.5 ||
+        <strong>Modelo:</strong> RS 1700 Mesh
+    </div>
+    <div class="form-group">
+                    <button type="button" class="btn btn-info" id="devices">Aparelhos Conectados📲: 3</button>
+                </div>
+    <div class="status-item">
+        <strong>Status da conexão:</strong>
+        <ul>
+            <li>Rede 2.4GHz: Conectado 📶 || Rede 5GHz: Conectado 📶</li>
+            <li>Endereço IP: 10.0.0.1</li>
+        </ul>
+    </div>
+    <div class="status-item">
+        <strong>Consumo de Rede:</strong>
+        <ul>
+            <li>Download ⬇: <span id="downloadSpeed">0 Mbps</span></li>
+            <li>Upload ⬆: <span id="uploadSpeed">0 Mbps</span></li>
+        </ul>
+    </div>
+</section>
+        <section class="tab-content" id="internet" role="tabpanel">
+            <h2>Configurações de Internet 📈</h2>
+            <form onsubmit="validateForm(event)">
+                <div class="form-group">
+                    <label for="connectionType">Tipo de Conexão</label>
+                    <select id="connectionType">
+                        <option value="dhcp">DHCP</option>
+                        <option value="static">IP Estático</option>
+                        <option value="pppoe">PPPoE</option>
+                    </select>
+                </div>
+                <div class="pppoe-fields">
+                    <div class="form-group">
+                        <label for="pppoeUser">Usuário PPPoE</label>
+                        <input type="text" id="pppoeUser" placeholder="Usuário">
+                    </div>
+                    <div class="form-group">
+                        <label for="pppoePass">Senha PPPoE</label>
+                        <input type="password" id="pppoePass" placeholder="Senha">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="ipAddress">Endereço IP</label>
+                    <input type="text" id="ipAddress" placeholder="192.168.0.1">
+                </div>
+                <div class="form-group">
+                    <label for="subnetMask">Máscara de Sub-rede</label>
+                    <input type="text" id="subnetMask" placeholder="255.255.255.0">
+                </div>
+                <div class="form-group">
+                    <label for="defaultGateway">Gateway Padrão</label>
+                    <input type="text" id="defaultGateway" placeholder="192.168.0.1">
+                </div>
+                <div class="form-group">
+                    <label for="primaryDNS">DNS Primário</label>
+                    <input type="text" id="primaryDNS" placeholder="8.8.8.8">
+                </div>
+                <div class="form-group">
+                    <label for="secondaryDNS">DNS Secundário</label>
+                    <input type="text" id="secondaryDNS" placeholder="8.8.4.4">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+                </div>
+            </form>
+        </section>
+        <section class="tab-content" id="wifi" role="tabpanel">
+            <h2>Configurações de WiFi 📶</h2>
+            <form onsubmit="validateForm(event)">
+                <div class="form-group">
+                    <label for="wifiSSID">Nome da Rede 2.4G (SSID)</label>
+                    <input type="text" id="wifiSSID" placeholder="RODRIGO WIFI_2.4G">
+                    <label for="wifiSSID">Nome da Rede 5G (SSID)</label>
+                    <input type="text" id="wifiSSID" placeholder="RODRIGO WIFI_5G">
+                </div>
+                <div class="form-group">
+                    <label for="wifiSecurity">Tipo de Segurança</label>
+                    <select id="wifiSecurity">
+                        <option value="none">Nenhuma</option>
+                        <option value="wpa2">WPA2/WPA3</option>
+                        <option value="wep">WPA/WPA2 (Recomendado)</option>
+                        <option value="wpa">WPA</option>
+                    </select>
+                </div>
+                <div class="form-group wifi-password-field">
+                    <label for="wifiPassword">Senha</label>
+                    <input type="password" id="wifiPassword" placeholder="Senha">
+                </div>
+                <div class="form-group">
+                    <label for="wifiChannel">Canal 2.4G</label>
+                    <select id="wifiChannel">
+                        <option value="none">Automático</option>
+                        <option value="wpa2">5</option>
+                        <option value="wep">6</option>
+                        <option value="wep">7</option>
+                        <option value="wpa2">8</option>
+                        <option value="wep">9</option>
+                        <option value="wep">10</option>
+                        <option value="wep">11</option>
+                    </select>
+                <div class="form-group">
+                    <label for="wifiChannel">Canal 5G</label>
+                    <select id="wifiChannel">
+                        <option value="none">Automático (DFS)</option>
+                        <option value="wpa2">36</option>
+                        <option value="wep">40</option>
+                        <option value="wep">44</option>
+                        <option value="wpa2">48</option>
+                        <option value="wep">149</option>
+                        <option value="wep">153</option>
+                        <option value="wep">157</option>
+                        <option value="wep">161</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="wifiMTU">MTU</label>
+                    <input type="text" id="wifiMTU" placeholder="1480" value="1480">
+                </div>
+                <div class="form-group">
+                    <label for="wifiBandwidth">Largura de Banda (2.4G)</label>
+                    <select id="wifiBandwidth">
+                        <option value="20">20 MHz</option>
+                        <option value="40">40 MHz</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="wifiBandwidth">Largura de Banda (5G)</label>
+                    <select id="wifiBandwidth">
+                        <option value="20">20 MHz</option>
+                        <option value="40">40 MHz</option>
+                        <option value="80">80 MHz</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+                </div>
+</section>
+            </form>
+        </section>
+        <section class="tab-content" id="visitantes" role="tabpanel">
+            <h2>Configurações da Rede Visitante 📱</h2>
+            <form onsubmit="validateForm(event)">
+                <div class="form-group">
+                    <label for="guestNetworkEnabled">Habilitar Rede Visitante</label>
+                    <select id="guestNetworkEnabled">
+                        <option value="yes">Habilitar</option>
+                        <option value="no">Desabilitar</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="guestSSID">Nome da Rede Visitante 2.4G (SSID)</label>
+                    <input type="text" id="guestSSID" placeholder="VISITANTE_2.4G">
+                    <label for="guestSSID">Nome da Rede Visitante 5G (SSID)</label>
+                    <input type="text" id="guestSSID" placeholder="VISITANTES_5G">
+                </div>
+                <div class="form-group">
+                    <label for="guestSSID">Limite de Dispositivos</label>
+                    <input type="number" id="guestSSID" value="7" name="numero" min="1" max="20">
+                </div>
+                <div class="form-group">
+                    <label for="guestNetworkEnabled">Validade:</label>
+                    <select id="guestNetworkEnabled">
+                        <option value="4h">4 horas</option>
+                        <option value="8h">8 horas</option>
+                        <option value="24h">Sempre</option>
+                    </select>
+                </div>
+                <div class="form-group guest-password-field">
+                    <label for="guestPassword">Senha</label>
+                    <input type="password" id="guestPassword" placeholder="Senha">
+                </div>
+                <div class="form-group">
+                    <label for="guestBandwidthLimit">Banda compartilhada entre os convidados:</label>
+                    <select id="guestNetworkEnabled">
+                        <option value="yes">2 Mbps</option>
+                        <option value="no">4 Mbps</option>
+                        <option value="no">8 Mbps</option>
+                        <option value="no">Ilimitado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+                </div>
+            </form>
+        </section>
+        <!-- Aba Firewall -->
+<section class="tab-content" id="firewall" role="tabpanel">
+    <h2>Configurações do Firewall 🛡️</h2>
+    <form>
+        <div class="form-group">
+            <label for="firewallEnabled">Firewall Ativado:</label>
+            <select id="firewallEnabled" name="firewallEnabled">
+                <option value="enabled">Ativado</option>
+                <option value="disabled">Desativado</option>
+            </select>
+        </div>
+        <h3>Bloqueio de Dispositivos</h3>
+    <form onsubmit="blockDevice(event)">
+        <div class="form-group">
+            <label for="deviceMac">MAC do Dispositivo</label>
+            <input type="text" id="deviceMac" placeholder="00:00:00:00:00:00">
+            <label for="deviceIp">Ip do Dispositivo</label>
+            <input type="text" id="deviceIp" placeholder="192.158.1.38">
+        </div>
+        <button type="submit" class="btn btn-danger">Bloquear Dispositivo</button>
+    </form>
+        <div class="form-group">
+            <label for="portForwarding">Redirecionamento de Portas:</label>
+            <textarea id="portForwarding" name="portForwarding" rows="2" placeholder="Digite as regras de redirecionamento de portas, ex.: 80:80, 443:443"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="dmz">DMZ:</label>
+            <input type="text" id="dmz" name="dmz" placeholder="Digite o IP para a DMZ">
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+    </form>
+</section>
+<!-- Aba Estatísticas -->
+<section class="tab-content" id="stats" role="stats">
+    <h2>Estatísticas 📊</h2>
+    <form>
+        <div class="form-group">
+            <label for="firewallEnabled">Gráfico de Consumo:</label>
+            <canvas id="speedChart" width="400" height="200"></canvas>
+            <table border="1">
+    <tr>
+        <th>Rx/Tx</th>
+        <th>Total Pacotes</th>
+        <th>Total Kbyte(s)</th>
+        <th>KByte/sec</th>
+    </tr>
+    <tr>
+        <td>Enviado (Tx):</td>
+        <td>8,894,375</td>
+        <td>2,022,260</td>
+        <td>27</td>
+    </tr>
+    <tr>
+        <td>Recebido (Rx):</td>
+        <td>26,023,973</td>
+        <td>26,023,973</td>
+        <td>7</td>
+    </tr>
+</table>
+</section>
+        <section class="tab-content" id="configuracoes" role="tabpanel">
+            <h2>Configurações ⚙️</h2>
+            <form>
+                <div class="form-group">
+                    <label for="adminPassword">Senha de Acesso</label>
+                    <input type="text" id="adminPassword" value="GbsNet9009@">
+                    <label for="adminPassword">Alterar Senha de Acesso</label>
+                    <input type="password" id="adminPassword" placeholder="Nova Senha">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+                    </div>
+                </div>
+                <div class="form-group">
+            <label for="autoMaintenance">Ativar Manutenção Automática</label>
+            <select id="autoMaintenance">
+                        <option value="yes">Sim</option>
+                        <option value="no">Não</option>
+        </div>
+        <div class="form-group">
+            <label for="maintenanceTime">Horário da Manutenção</label>
+            <input type="time" id="maintenanceTime" value="03:00">
+        </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-danger" id="restartRouter">Reiniciar Roteador</button>
+                </div>
+                <div class="form-group">
+                    <label for="firmwareUpload">Atualizar Firmware</label>
+                    <input type="file" id="firmwareUpload">
+                    <button type="button" class="btn btn-warning" id="updateFirmware">Atualizar</button>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-info" id="backupSettings">Backup de Configurações</button>
+                </div>
+                <div class="form-group">
+                    <label for="restoreUpload">Restaurar Configurações</label>
+                    <input type="file" id="restoreUpload">
+                    <button type="button" class="btn btn-info" id="restoreSettings">Restaurar</button>
+                </div>
+            </form>
+        </section>
+    </div>
+    
+    <button class="btn btn-secondary" id="toggleDarkMode">Modo Escuro 🌑</button>
+    </div>
+    <div class="form-group">
+                    <button type="button" class="btn btn-info" id="info">Mais informações 💬</button>
+                </div>
+
+    <script>
+        const correctPassword = 'GbsNet9009';
+
+        document.getElementById('login-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const password = document.getElementById('password').value;
+            if (password === correctPassword) {
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+            } else {
+                document.getElementById('login-error').textContent = 'Senha incorreta. Tente novamente.';
+            }
+        });
+        // Navegação entre abas
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+                this.classList.add('active');
+                document.getElementById(this.getAttribute('data-tab')).classList.add('active');
+            });
+        });
+
+        // Contador fictício para o tempo ativo do sistema
+        function startUptimeCounter() {
+            let seconds = 0;
+            let minutes = 0;
+            let hours = 0;
+
+            function updateCounter() {
+                seconds++;
+                if (seconds === 60) {
+                    seconds = 0;
+                    minutes++;
+                }
+                if (minutes === 60) {
+                    minutes = 0;
+                    hours++;
+                }
+                document.getElementById('uptime').textContent =
+                    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
+
+            setInterval(updateCounter, 1000);
+        }
+
+        window.onload = startUptimeCounter;
+
+        // Mostrar/ocultar campos PPPoE
+        document.getElementById('connectionType').addEventListener('change', function() {
+            const pppoeFields = document.querySelector('.pppoe-fields');
+            if (this.value === 'pppoe') {
+                pppoeFields.style.display = 'block';
+            } else {
+                pppoeFields.style.display = 'none';
+            }
+        });
+
+        // Mostrar/ocultar campo de senha WiFi
+        document.getElementById('wifiSecurity').addEventListener('change', function() {
+            const wifiPasswordField = document.querySelector('.wifi-password-field');
+            if (this.value === 'none') {
+                wifiPasswordField.style.display = 'none';
+            } else {
+                wifiPasswordField.style.display = 'block';
+            }
+        });
+
+        // Mostrar/ocultar campo de senha Rede de Visitantes
+        document.getElementById('guestNetworkEnabled').addEventListener('change', function() {
+            const guestPasswordField = document.querySelector('.guest-password-field');
+            if (this.value === 'no') {
+                guestPasswordField.style.display = 'none';
+            } else {
+                guestPasswordField.style.display = 'block';
+            }
+        });
+
+        // Funções de Configurações Avançadas
+        document.getElementById('restartRouter').addEventListener('click', function() {
+            alert('O roteador será reiniciado.');
+            // Adicionar lógica para reiniciar o roteador aqui
+        });
+
+        document.getElementById('updateFirmware').addEventListener('click', function() {
+            const fileInput = document.getElementById('firmwareUpload');
+            if (fileInput.files.length > 0) {
+                alert('Atualizando firmware...');
+                // Adicionar lógica para atualizar firmware aqui
+            } else {
+                alert('Por favor, selecione um arquivo de firmware.');
+            }
+        });
+
+        document.getElementById('backupSettings').addEventListener('click', function() {
+            alert('O Backup das configurações foi realizado');
+            // Adicionar lógica para backup aqui
+        });
+        
+        document.getElementById('devices').addEventListener('click', function() {
+    alert('S20 de Rodrigo📱\nIP: 10.0.0.106\nMAC: 12:85:8D:AF:90:61\n\nGalaxy-A05s📱\nIP: 10.0.0.145\nMAC: 13:95:8E:AB:90:61\n\nTv da Sala🖥\nIP: 10.8.0.183\nMAC: 13:75:8H:AB:85:61');
+});
+
+document.getElementById('info').addEventListener('click', function() {
+    alert('Contate-me pelo Telegram: https://t.me/rodrigo_rsn');
+});
+
+        document.getElementById('restoreSettings').addEventListener('click', function() {
+            const fileInput = document.getElementById('restoreUpload');
+            if (fileInput.files.length > 0) {
+                alert('Restaurando configurações...');
+                // Adicionar lógica para restaurar configurações aqui
+            } else {
+                alert('Por favor, selecione um arquivo de backup.');
+            }
+        });
+
+        // Alternância do Modo Escuro
+        document.getElementById('toggleDarkMode').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+        });
+
+        // Validação do formulário
+        function validateForm(event) {
+            event.preventDefault();
+            alert('Configurações salvas com sucesso!');
+        }
+        function startNetworkUsageSimulator() {
+    function getRandomSpeed() {
+        return (Math.random() * 100).toFixed(2);
+    }
+
+    function updateNetworkUsage() {
+        document.getElementById('downloadSpeed').textContent = `${getRandomSpeed()} Mbps`;
+        document.getElementById('uploadSpeed').textContent = `${getRandomSpeed()} Mbps`;
+    }
+
+    setInterval(updateNetworkUsage, 1500);
+}
+
+window.onload = function() {
+    startUptimeCounter();
+    startNetworkUsageSimulator();
+};
+
+function validateParentalControlForm(event) {
+    event.preventDefault();
+    const parentalControlStatus = document.getElementById('parentalControlStatus').checked;
+    const restrictedSites = document.getElementById('restrictedSites').value;
+
+    if (parentalControlStatus && !restrictedSites) {
+        alert('Por favor, adicione pelo menos um site restrito.');
+        return;
+    }
+
+    alert('Configurações de Controle Parental salvas com sucesso!');
+}
+
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
+    });
+});
+function blockDevice(event) {
+    event.preventDefault();
+    const deviceMac = document.getElementById('deviceMac').value.trim();
+
+    if (!deviceMac) {
+        alert('Por favor, insira o MAC do Dispositivo.');
+        return;
+    }
+
+    let blockedDevices = JSON.parse(localStorage.getItem('blockedDevices')) || [];
+    if (blockedDevices.includes(deviceMac)) {
+        alert('Dispositivo já está bloqueado.');
+        return;
+    }
+
+    blockedDevices.push(deviceMac);
+    localStorage.setItem('blockedDevices', JSON.stringify(blockedDevices));
+    updateBlockedDevicesList();
+
+    document.getElementById('deviceMac').value = '';
+}
+
+function unblockDevice(deviceMac) {
+    let blockedDevices = JSON.parse(localStorage.getItem('blockedDevices')) || [];
+    blockedDevices = blockedDevices.filter(mac => mac !== deviceMac);
+    localStorage.setItem('blockedDevices', JSON.stringify(blockedDevices));
+    updateBlockedDevicesList();
+}
+
+function updateBlockedDevicesList() {
+    const blockedDevices = JSON.parse(localStorage.getItem('blockedDevices')) || [];
+    const blockedDevicesList = document.getElementById('blockedDevicesList');
+    blockedDevicesList.innerHTML = '';
+
+    blockedDevices.forEach(deviceMac => {
+        const li = document.createElement('li');
+        li.textContent = deviceMac;
+        const unblockButton = document.createElement('button');
+        unblockButton.textContent = 'Desbloquear';
+        unblockButton.className = 'btn btn-secondary ml-2';
+        unblockButton.onclick = () => unblockDevice(deviceMac);
+        li.appendChild(unblockButton);
+        blockedDevicesList.appendChild(li);
+    });
+}
+const ctx = document.getElementById('speedChart').getContext('2d');
+
+const speedChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [], // Mantém isso vazio
+        datasets: [
+            {
+                label: 'Download (Mbps)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                data: [],
+                fill: true,
+            },
+            {
+                label: 'Upload (Mbps)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                data: [],
+                fill: true,
+            }
+        ]
+    },
+    options: {
+        scales: {
+            x: {
+                display: false,  // Desativa o eixo x
+            },
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+function updateChart(downloadSpeed, uploadSpeed) {
+    const time = Date.now();
+
+    // Adiciona novo ponto de dados
+    speedChart.data.labels.push(time);
+    speedChart.data.datasets[0].data.push(downloadSpeed);
+    speedChart.data.datasets[1].data.push(uploadSpeed);
+
+    // Remove dados antigos (manter, por exemplo, 20 pontos de dados)
+    if (speedChart.data.labels.length > 40) {
+        speedChart.data.labels.shift();
+        speedChart.data.datasets[0].data.shift();
+        speedChart.data.datasets[1].data.shift();
+    }
+
+    // Atualiza o gráfico
+    speedChart.update();
+}
+
+// Simulação de dados (substitua isso pela lógica real)
+setInterval(() => {
+    const downloadSpeed = Math.random() * 100;
+    const uploadSpeed = Math.random() * 50;
+
+    updateChart(downloadSpeed, uploadSpeed);
+}, 1000);
+
+    </script>
+</body>
+</html>
