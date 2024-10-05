@@ -4,2002 +4,930 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wiki do SAC📶</title>
-    <link rel="icon" href="https://i.ibb.co/2cJ7gjS/favicon-32x32.png" type="image/png">
+    <title>Simulador de Roteador</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
-            font-family: 'Segoe Ui';
-            background: linear-gradient(90deg, #5ea0e6, #1076e2);;
+            font-family: 'Segoe UI semibold';
+            background-color: #f8f9fa;
+            background-size: cover;
+            background-position: center;
+            background-repeat: repeat;
             margin: 0;
             padding: 0;
+            color: #333;
+        }
+        .container {
+            display: flex;
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        .tabs {
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
-        header {
-            background: linear-gradient(90deg, #58a9ff, #f37201);
-            color: white;
-            padding: 12px;
-            text-align: center;
-            font-size: 2em;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-        #container {
-            display: flex;
-            flex-grow: 1;
-            overflow: hidden;
-        }
-        nav {
-            width: 350px;
-            background: linear-gradient(90deg, #5ea0e6, #1076e2);
-            padding: 20px;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
-            max-height: auto; /* Define a altura máxima da coluna */
-            overflow-y: auto; /* Adiciona barra de rolagem vertical se necessário */
-        }
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        nav ul li {
-            margin-bottom: 6px;
-            text-align: left;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        nav ul li a {
-            color: white;
-            text-decoration: none;
-            display: block;
-            padding: 12px 15px;
-            background-color: #004080;
-            border-radius: 8px;
-            font-size: 1.1em;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-            cursor: help;
-        }
-        nav ul li a:hover {
-            background-color: #0066cc;
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0, 102, 204, 0.5);
-        }
-        section {
-            display: none;
-            padding: 20px;
-            background-color: white;
-            flex-grow: 1;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            margin: 20px;
-            overflow-y: auto;
-            max-height: calc(100vh - 100px); 
-            border-radius: 8px;
-            animation: fadeIn 0.8s ease-in-out;
-        }
-        section.active {
-            display: block;
-        }
-        h2 {
-            color: #004080;
-            border-bottom: 2px solid #004080;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        h3 {
-            color: #000000;
-            border-bottom: 2px solid #004080;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        h4 {
-            color: #ffffff;
-            border-bottom: 2px solid #004080;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        p, ul {
-            font-size: 1.1em;
-            line-height: 1.6em;
-        }
-        .process-column, .department-column {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-        }
-        .process-column button, .department-column button {
-            background-color: #00509e;
-            color: white;
-            padding: 40px;
-            border: none;
-            border-radius: 8px;
-            width: 30%;
-            cursor: help;
-            transition: background-color 0.3s ease;
-        }
-        .process-column button:hover, .department-column button:hover {
-            background-color: #007bff93;
-        }
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-            z-index: 10;
+            border-right: 1px solid #dee2e6;
+            padding-right: 4px;
+            background-color: rgba(255, 255, 255, 0.8);
+            margin-right: 15px;
             border-radius: 8px;
         }
-        .popup.active {
-            display: block;
-        }
-        .popup h3 {
-            margin-top: 0;
-        }
-        .close-btn {
-            background-color: #f33d36;
-            color: white;
-            padding: 5px;
-            border: none;
+        .tab {
+            padding: 15px 20px;
             cursor: pointer;
-            border-radius: 5px;
-            margin-top: 15px;
+            border: 1px solid transparent;
+            border-right: none;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.8);
+            transition: background-color 0.4s, transform 0.4s;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
         }
-        .close-btn:hover {
-            background-color: #c9302c;
+        .tab:hover {
+            background-color: #d0e7ff;
+            transform: scale(1.2);
         }
-        .close-btn-rout {
-            background-color: #800400;
-            color: white;
-            width: 100%;
-            padding: 5px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-top: 15px;
-        }
-        .close-btn-rout:hover {
+        .tab.active {
             background-color: #ffffff;
+            font-weight: bold;
+            border-left: 4px solid #007bff;
+            border-right: 4px solid #007bff;
         }
-        .catalogo {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+        .tab:focus {
+            outline: none;
+            background-color: #d0e7ff;
+        }
+        .tab-content {
+            display: none;
             padding: 20px;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
             flex-grow: 1;
         }
-        .roteador {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 16px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: transform 0.9s ease, box-shadow 0.3s ease;
+        .tab-content.active {
+            display: block;
         }
-        .roteador:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-        .roteador img {
-            max-width: 100%;
-            height: auto;
-            border-bottom: 1px solid #ddd;
+        .status-item {
             margin-bottom: 10px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: help;
         }
-        .roteador img:hover {
-            transform: scale(1.10);
-        }
-        .roteador h3 {
-            margin: 10px 0;
-            font-size: 1.2em;
-            color: #333;
-        }
-        .roteador p {
-            margin: 5px 0;
-            color: #666;
-        }
-        .roteador a {
-            display: inline-block;
-            margin-top: 10px;
-            color: #007bff;
-            text-decoration: none;
-        }
-        .roteador a:hover {
-            text-decoration: underline;
-        }
-        /* Estilo para a caixa de pesquisa */
-        #pesquisaProtocolo {
-        width: 90%;
-        padding: 10px 15px;
-        font-size: 16px;
-        border: 1px solid #ccc;
-        border-radius: 25px;
-        outline: none;
-        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        margin-bottom: 20px; /* Espaço abaixo da caixa de pesquisa */
-        }
-
-        /* Estilo ao focar na caixa de pesquisa */
-        #pesquisaProtocolo:focus {
-            border-color: #007bff; /* Cor da borda ao focar */
-            box-shadow: 2px 2px 12px rgba(0, 123, 255, 0.3); /* Sombra ao focar */
-        }
-
-        /* Ajuste do placeholder */
-        #pesquisaProtocolo::placeholder {
-            color: #888; /* Cor do placeholder */
-            font-style: italic;
-        }
-        /* Estilo geral da seção de introdução */
-        #introducao {
-            background: white
-            color: white;
-            padding: 40px;
-            text-align: center;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Estilo para o título */
-        #introducao h2 {
-            font-size: 2.5em;
-            font-weight: bold;
+        .status-image {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
             margin-bottom: 20px;
-        }
-
-        /* Estilo das imagens */
-        #introducao img {
-            margin: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Estilo para os parágrafos */
-        #introducao p {
-            font-size: 1.2em;
-            line-height: 1;
-            margin: 20px 0;
-        }
-
-        /* Lista de tópicos */
-        #introducao ul {
-            list-style: none;
-            padding: 0;
-            font-size: 1.1em;
-            margin: 10px 0;
-        }
-
-        #introducao ul li {
-            margin: 10px 0;
-            padding-left: 10px;
-            position: relative;
-        }
-
-        /* Adicionando ícones de marcador na lista */
-        #introducao ul li::before {
-            content: '✔'; /* Marcador customizado */
-            position: absolute;
-            left: 0;
-            color: #1900ff; /* Cor dourada para destaque */
-            font-size: 1.2em;
-        }
-        /* Estilo para as tabelas */
-        table {
-            width: 95%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 1em;
-            font-family: 'Consolas', sans-serif;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        table thead {
-            background-color: #007bff;
-            color: white;
-        }
-
-        table th, table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        table tr:hover {
-            background-color: #2f00ffa6;
-        }
-
-        table a {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        table a:hover {
-            text-decoration: underline;
-        }
-
-        /* Estilo do título */
-        #ferramentas h2 {
-            font-size: 2em;
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        /* Ajuste de ícones */
-        table td:first-child {
-            font-size: 1.2em;
-        }
-        .opcoes {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            width: 95%;
+            display: block;
             margin-left: auto;
-            margin: 0 auto;
-            
+            margin-right: auto;
         }
-
-        .opcao {
-            width: 28%;
-            background-color: #007bffe5;
-            border-radius: 18px;
-            padding: 20px;
-            margin-top: 14px;
-            margin-left: auto;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            
-        }
-
-        p {
-            margin: 0;
-        }
-
-        button {
-            background-color: #210cd6e5;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background-color 0.4s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.685);
-        }
-
-        button:hover {
-            background-color: #d35400ab;
-        }
-
-        .opcao {
-            transition: transform 0.3s ease-in-out;
-        }
-
-        .opcao:hover {
-            transform: scale(1.1);
-            transition: transform 0.3s ease-in-out;
-        }
-
-        .opcao button {
-            transition: background-color 0.3s ease;
-        }
-
-        .opcao:hover button {
-            background-color: #100cf1;
-        }
-
-        form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        max-width: 300px;
-        width: 120%;
-        margin: 50px 0;
-        background-color: rgba(17, 123, 209, 0.827);
-        padding: 25px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        label {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 1.2em;
-        border-radius: 8px;
-        }
-        input {
-        width: calc(90% - 20px);
-        padding: 10px;
-        margin: 5px 0;
-        box-sizing: border-box;
-        font-size: 1.2em;
-        border-radius: 8px;
-        }
-        button {
-        background-color: #ff7801;
-        color: white;
-        padding: 12px 18px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background-color 0.3s, transform 0.5s;
-        font-size: 1.5em;
-        object-position: center;
-        width: 100%;
-        }
-        button:hover {
-        background-color: #0096c4;
-        transform: scale(1.05);
-        transition: transform 0.3s ease-in-out;
-        }
-        #resultado {
-        margin-top: 50px;
-        font-size: 1.5em;
-        padding: 20px;
-        background-color: rgba(17, 123, 209, 0.827);
-        color: white;
-        border-radius: 4px;
-        display: none;
-        transition: font-size 0.3s;
-        border-radius: 8px;
-        text-align: center;
-        }
-        
-        #resultado button {
-        padding: 15px 5px;
-        font-size: 1em;
-        width: 80%
-    }
-    
-        footer {
-        margin-top: 20px;
-        }
-
-        .calc-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .input-group {
+        .form-group {
             margin-bottom: 15px;
         }
-        label {
+        .form-group label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
         }
-        input[type="text"], input[type="number"], input[type="date"] {
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 8px;
-            border: 1px solid #ccc;
+            box-sizing: border-box;
+            border: 1px solid #ced4da;
             border-radius: 4px;
+            transition: border-color 0.3s;
         }
-        .btn-calculate {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .btn-calculate:hover {
-            background-color: #0056b3;
-        }
-        .calculators-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .calculator {
-            flex: 1;
-            background-color: #e9ecef;
-            padding: 15px;
-            border-radius: 8px;
-        }
-        .pre-pago-title, .pos-pago-title {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .accordion-button {
-            align-content: center;
-            width: 100%;
-            padding: 10px;
-            background-color: #00509e;
-            border: none;
-            text-align: center;
-            cursor: pointer;
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #80bdff;
             outline: none;
-            transition: 0.4s;
-            margin-bottom: 5px;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
         }
-
-        .modal {
+        .pppoe-fields, .wifi-password-field, .guest-password-field {
             display: none;
-            position: fixed;
-            z-index: 1;
-            padding-top: 60px;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 250%;
-            background-color: rgba(0,0,0,0.4);
         }
-
-        .modal-content {
-            background-color: #fff;
-            margin: 5% auto;
-            padding: 80px;
-            border: 1px solid #888;
-            width: 70%;
+        .dark-mode {
+            background-color: #343a40;
+            color: #f8f9fa;
         }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
+        .dark-mode .container {
+            background-color: #454d55;
         }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
+        .dark-mode .tab {
+            background-color: #495057;
+            border-color: #6c757d;
+        }
+        .dark-mode .tab.active {
+            background-color: #343a40;
+            border-left-color: #007bff;
+        }
+        .dark-mode .form-group input,
+        .dark-mode .form-group select,
+        .dark-mode .form-group textarea {
+            background-color: #495057;
+            border-color: #6c757d;
+            color: #f8f9fa;
+        }
+        .dark-mode .form-group input::placeholder,
+        .dark-mode .form-group textarea::placeholder {
+            color: #adb5bd;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #000000;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .header img {
+            width: 150px;
+            height: 50px;
+            margin-right: 10px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+            transform: scale(1.1);
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+            transform: scale(1.1);
+        }
+        /* Efeito hover para as abas */
+        .tab:hover {
+            background-color: #d0e7ff;
+            transition: background-color 0.4s;
+        }
+        /* Efeito hover para os botões */
+        .btn:hover {
+            opacity: 0.8;
+            transition: opacity 0.3s;
+            transform: scale(1.1);
+        }
+        /* Efeito hover para o botão de alternância do modo escuro */
+        #toggleDarkMode:hover {
+            background-color: #ccc;
+            color: #000;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        /* Efeito hover para os itens da lista bloqueada */
+        #blockedDevicesList li:hover {
+            background-color: #f0f0f0;
             cursor: pointer;
         }
-
-        .popup iframe {
-        width: 1190vw; /* O iframe ocupará 90% da largura da tela */
-        height: 78vh; /* O iframe ocupará 80% da altura da tela */
-        border: none; /* Remove a borda do iframe */
+        /* Efeito hover para os botões de desbloquear na lista bloqueada */
+        #blockedDevicesList button:hover {
+            background-color: #ddd;
+            transition: background-color 0.3s;
+        }
+        /* Estilos para a tela de login */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+            background-repeat: repeat;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        .login-form {
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .login-form h2 {
+            margin-bottom: 20px;
+        }
+        .login-form input {
+            margin-bottom: 15px;
+        }
+        .login-form img {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+        /* Estilo para o botão de ajuda */
+        .help-button {
+            display: block;
+            margin: 20px auto 0;
+            padding: 5px 10px;
+            font-size: 14px;
+            color: #007bff;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .help-button:hover {
+            color: #0056b3;
+            transform: scale(1.1);
+        }
+        table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Consolas Black, sans-serif;
+        margin: 10px 0;
+        border-radius: 4px;
     }
-        /* Estilo responsivo para dispositivos móveis */
-        @media (max-width: 768px) {
-            #introducao img {
-                height: 200px;
-            }
 
-            #introducao h2 {
-                font-size: 2em;
-            }
+    th, td {
+        padding: 12px;
+        text-align: Center;
+        border-bottom: 1px solid #ddd;
+        border-radius: 4px;
+    }
 
-            #introducao p, #introducao ul {
-                font-size: 1em;
-            }
-        }
+    th {
+        background-color: #007bff;
+        color: white;
+        border-radius: 4px;
+    }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+    tr:hover {
+        background-color: #979797;
+    }
+
+    td {
+        color: #333;
+        border-radius: 4px;
+    }
+    .logout-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 4px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.logout-button:hover {
+    background-color: #d32f2f;
+    transform: scale(1.1)
+}
     </style>
-<!-- Code injected by live-server -->
-<script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
-</script>
 </head>
 <body>
-    <header>
-    <img src="https://i.ibb.co/KqtKTFT/logo.png" alt="Logo" style="height: 50px; vertical-align: middle;">
-    Wiki do SAC
-</header>
-    <!-- Seções -->
-    <div id="container">
-        <nav>
-            <ul>
-                <li><a href="#" onclick="showSection('introducao')"><strong>🎚️Introdução</strong></a></li>
-                <li><a href="#" onclick="showSection('departamentos')"><strong>📈Departamentos</strong></a></li>
-                <li><a href="#" onclick="showSection('protocolos')"><strong>💻Protocolos</strong></a></li>
-                <li><a href="#" onclick="showSection('ferramentas')"><strong>🔧Ferramentas</strong></a></li>
-                <li><a href="#" onclick="showSection('conexao')"><strong>📡Roteadores</strong></a></li>
-                <li><a href="#" onclick="showSection('materiais')"><strong>📑Docs de Apoio</strong></a></li>
-                <li><a href="#" onclick="showSection('rev')"><strong>🔁Reversão</strong></a></li>
-                <li><a href="#" onclick="showSection('textos')"><strong>📃Textos Padrão</strong></a></li>
-                <li><a href="#" onclick="showSection('cursos')"><strong>📚Cursos</strong></a></li>
-                <li><a href="#" onclick="showSection('trilha')"><strong>🗃Integração</strong></a></li>
-                <li><a href="#" onclick="showSection('calc')"><strong>🧮Calculadoras</strong></a></li>
-                <li><a href="#" onclick="showSection('faq')"><strong>❓FAQ</strong></a></li>
-                <h4>Feito por Rodrigo S.⚡</h4>
-            </ul>
-        </nav>
+    <!-- Tela de login -->
+    <div class="login-container" id="login-container">
+        <div class="login-form">
+            <h2>RS 1700 Mesh 📶</h2>
+            <h3>Feito por Rodrigo S.⚡</h3>
+            <form id="login-form">
+                <img src="https://cdn-icons-gif.flaticon.com/8717/8717908.gif" alt="GIF de boas-vindas">
+                <div class="form-group">
+                    <label for="welcome">Bem-vindo à página de configuração do seu roteador!
+</label>
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" class="form-control" placeholder="Digite a senha">
+                </div>
+                <button type="submit" class="btn btn-primary">Entrar</button>
+                <div id="login-error" class="text-danger mt-2"></div>
+            </form>
+            <button class="help-button" title="Se você esquecer sua senha, você pode restaurar as configurações de fábrica. Senha Padrão: GbsNet9009">Esqueci minha senha</button>
+        </div>
+    </div>
+</body>
+    <!-- Cabeçalho -->
+<div class="header">
+    <img src="https://www.gbsn.com.br/gbs/assets/images/loader/logo.png" alt="Logo">
+    <span>Versão 2.8.5<span> 
+    <div>Por Rodrigo S.⚡ (todos os direitos reservados)®️</div>
+    <button class="logout-button" onclick="location.reload();">Sair</button>
+</div>
 
-        <!-- Introdução -->
-        <section id="introducao">
-            <div>
-                <h2>Bem-vindo à área de atendimento ao Cliente!</h2>
-                <img src="https://c5gwmsmjx1.execute-api.us-east-1.amazonaws.com/prod/empresa/logo/110107/GBS_LOGO_2020.png_002.png_PERFIL.png" alt="ImagemIntro" style="height: 300px;">
-                <img src="https://media.tenor.com/cOzgHz34BacAAAAi/wikipedia-wiki.gif" alt="ImagemIntro" style="height: 300px;">
-                <p><strong>Estamos aqui para ajudá-lo a realizar um atendimento de excelência! Nesta wiki, você encontrará tudo o que precisa saber para atender nossos clientes com agilidade e eficiência.</strong></p>
-                <p><strong>Explore as seções ao lado para aprender mais sobre:</strong></p>
-                <ul>
-                    <li><strong>Protocolos de atendimento e processos</strong></li>
-                    <li><strong>Materiais e cursos para aumentar o aprendizado</strong></li>
-                    <li><strong>Ferramentas que irão otimizar seu trabalho no dia a dia</strong></li>
-                </ul>
-            </div>
+    <!-- Conteúdo principal -->
+    <div class="container">
+        <nav class="tabs" role="tablist">
+    <div class="tab active" data-tab="status" aria-controls="status" role="tab" tabindex="0">📄 Status</div>
+    <div class="tab" data-tab="internet" aria-controls="internet" role="tab" tabindex="0">📈 Internet / WAN</div>
+    <div class="tab" data-tab="wifi" aria-controls="wifi" role="tab" tabindex="0">📶 WiFi</div>
+    <div class="tab" data-tab="visitantes" aria-controls="visitantes" role="tab" tabindex="0">📱 Rede Visitante</div>
+    <div class="tab" data-tab="firewall" aria-controls="firewall" role="tab" tabindex="0">🛡️ Firewall</div>
+    <div class="tab" data-tab="controle-parental" aria-controls="controle-parental" role="tab" tabindex="0">👨‍👩‍👧‍👦 Controle Parental</div>
+    <div class="tab" data-tab="stats" aria-controls="stats" role="tab" tabindex="0">📊 Estatísticas</div>
+    <div class="tab" data-tab="configuracoes" aria-controls="configuracoes" role="tab" tabindex="0">⚙️ Configurações</div>
+</nav>
+
+<section class="tab-content" id="controle-parental" role="tabpanel">
+    <h2>Controle Parental 👨‍👩‍👧‍👦</h2>
+    <form onsubmit="validateParentalControlForm(event)">
+        <div class="form-group">
+            <label for="wifiBandwidth">Ativar / Desativar</label>
+<select id="parentalControlStatus">
+    <option value="yes">Ativar</option>
+    <option value="No">Desativar</option>
+        </div>
+        <div class="form-group">
+            <label for="accessControl">Controle de Acesso:</label>
+            <textarea id="accessControl" name="accessControl" rows="2" placeholder="Digite os dispositivos e horários de acesso, ex.: 192.168.1.10, 08:00-18:00"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="restrictedSites">Sites Restritos</label>
+            <textarea id="restrictedSites" placeholder="Adicione URLs separadas por vírgula" rows="4"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+    </form>
+</section>
+
+<section class="tab-content active" id="status" role="tabpanel">
+    <h2>Status 📄</h2>
+    <img src="https://tic-cms-prod-br.s3.amazonaws.com/originals/wifi.gif" alt="Imagem de Status" class="status-image">
+    <div class="status-item">
+        <strong>Tempo ativo do sistema 🕐:</strong> <span id="uptime">00:00:00</span>
+    </div>
+    <div class="status-item">
+        <strong>Versão de firmware:</strong> 2.8.5 ||
+        <strong>Modelo:</strong> RS 1700 Mesh
+    </div>
+    <div class="form-group">
+                    <button type="button" class="btn btn-info" id="devices">Aparelhos Conectados📲: 3</button>
+                </div>
+    <div class="status-item">
+        <strong>Status da conexão:</strong>
+        <ul>
+            <li>Rede 2.4GHz: Conectado 📶 || Rede 5GHz: Conectado 📶</li>
+            <li>Endereço IP: 10.0.0.1</li>
+        </ul>
+    </div>
+    <div class="status-item">
+        <strong>Consumo de Rede:</strong>
+        <ul>
+            <li>Download ⬇: <span id="downloadSpeed">0 Mbps</span></li>
+            <li>Upload ⬆: <span id="uploadSpeed">0 Mbps</span></li>
+        </ul>
+    </div>
+</section>
+        <section class="tab-content" id="internet" role="tabpanel">
+            <h2>Configurações de Internet 📈</h2>
+            <form onsubmit="validateForm(event)">
+                <div class="form-group">
+                    <label for="connectionType">Tipo de Conexão</label>
+                    <select id="connectionType">
+                        <option value="dhcp">DHCP</option>
+                        <option value="static">IP Estático</option>
+                        <option value="pppoe">PPPoE</option>
+                    </select>
+                </div>
+                <div class="pppoe-fields">
+                    <div class="form-group">
+                        <label for="pppoeUser">Usuário PPPoE</label>
+                        <input type="text" id="pppoeUser" placeholder="Usuário">
+                    </div>
+                    <div class="form-group">
+                        <label for="pppoePass">Senha PPPoE</label>
+                        <input type="password" id="pppoePass" placeholder="Senha">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="ipAddress">Endereço IP</label>
+                    <input type="text" id="ipAddress" placeholder="192.168.0.1">
+                </div>
+                <div class="form-group">
+                    <label for="subnetMask">Máscara de Sub-rede</label>
+                    <input type="text" id="subnetMask" placeholder="255.255.255.0">
+                </div>
+                <div class="form-group">
+                    <label for="defaultGateway">Gateway Padrão</label>
+                    <input type="text" id="defaultGateway" placeholder="192.168.0.1">
+                </div>
+                <div class="form-group">
+                    <label for="primaryDNS">DNS Primário</label>
+                    <input type="text" id="primaryDNS" placeholder="8.8.8.8">
+                </div>
+                <div class="form-group">
+                    <label for="secondaryDNS">DNS Secundário</label>
+                    <input type="text" id="secondaryDNS" placeholder="8.8.4.4">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+                </div>
+            </form>
         </section>
-
-        <!-- Departamentos -->
-        <section id="departamentos">
-            <h2>Departamentos e suas Finalidades</h2>
-            <div class="department-column">
-                <button onclick="showPopup('n1')">Relacionamento N1</button>
-                <button onclick="showPopup('n2')">Suporte Nível 2</button>
-                <button onclick="showPopup('comercial')">Comercial / CRM</button>
-                <button onclick="showPopup('financeiro')">Faturamento</button>
-                <button onclick="showPopup('negociação')">Negociação</button>
-                <button onclick="showPopup('pj')">Atendimento Pj e N3</button>
-                <button onclick="showPopup('retenção')">Retenção e Ouvidoria</button>
-                <button onclick="showPopup('logi')">Logística</button>
-                <button onclick="showPopup('infra')">Infra</button>
-                <button onclick="showPopup('pres')">Presencial</button>
-            </div>
+        <section class="tab-content" id="wifi" role="tabpanel">
+            <h2>Configurações de WiFi 📶</h2>
+            <form onsubmit="validateForm(event)">
+                <div class="form-group">
+                    <label for="wifiSSID">Nome da Rede 2.4G (SSID)</label>
+                    <input type="text" id="wifiSSID" placeholder="RODRIGO WIFI_2.4G">
+                    <label for="wifiSSID">Nome da Rede 5G (SSID)</label>
+                    <input type="text" id="wifiSSID" placeholder="RODRIGO WIFI_5G">
+                </div>
+                <div class="form-group">
+                    <label for="wifiSecurity">Tipo de Segurança</label>
+                    <select id="wifiSecurity">
+                        <option value="none">Nenhuma</option>
+                        <option value="wpa2">WPA2/WPA3</option>
+                        <option value="wep">WPA/WPA2 (Recomendado)</option>
+                        <option value="wpa">WPA</option>
+                    </select>
+                </div>
+                <div class="form-group wifi-password-field">
+                    <label for="wifiPassword">Senha</label>
+                    <input type="password" id="wifiPassword" placeholder="Senha">
+                </div>
+                <div class="form-group">
+                    <label for="wifiChannel">Canal 2.4G</label>
+                    <select id="wifiChannel">
+                        <option value="none">Automático</option>
+                        <option value="wpa2">5</option>
+                        <option value="wep">6</option>
+                        <option value="wep">7</option>
+                        <option value="wpa2">8</option>
+                        <option value="wep">9</option>
+                        <option value="wep">10</option>
+                        <option value="wep">11</option>
+                    </select>
+                <div class="form-group">
+                    <label for="wifiChannel">Canal 5G</label>
+                    <select id="wifiChannel">
+                        <option value="none">Automático (DFS)</option>
+                        <option value="wpa2">36</option>
+                        <option value="wep">40</option>
+                        <option value="wep">44</option>
+                        <option value="wpa2">48</option>
+                        <option value="wep">149</option>
+                        <option value="wep">153</option>
+                        <option value="wep">157</option>
+                        <option value="wep">161</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="wifiMTU">MTU</label>
+                    <input type="text" id="wifiMTU" placeholder="1480" value="1480">
+                </div>
+                <div class="form-group">
+                    <label for="wifiBandwidth">Largura de Banda (2.4G)</label>
+                    <select id="wifiBandwidth">
+                        <option value="20">20 MHz</option>
+                        <option value="40">40 MHz</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="wifiBandwidth">Largura de Banda (5G)</label>
+                    <select id="wifiBandwidth">
+                        <option value="20">20 MHz</option>
+                        <option value="40">40 MHz</option>
+                        <option value="80">80 MHz</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+                </div>
+</section>
+            </form>
         </section>
-
-        <!-- Protocolos e Processos -->
-<section id="protocolos">
-    <h2>Protocolos e Processos</h2>
-    <input type="text" id="pesquisaProtocolo" placeholder="Buscar protocolo..." onkeyup="filtrarProtocolos()">
+        <section class="tab-content" id="visitantes" role="tabpanel">
+            <h2>Configurações da Rede Visitante 📱</h2>
+            <form onsubmit="validateForm(event)">
+                <div class="form-group">
+                    <label for="guestNetworkEnabled">Habilitar Rede Visitante</label>
+                    <select id="guestNetworkEnabled">
+                        <option value="yes">Habilitar</option>
+                        <option value="no">Desabilitar</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="guestSSID">Nome da Rede Visitante 2.4G (SSID)</label>
+                    <input type="text" id="guestSSID" placeholder="VISITANTE_2.4G">
+                    <label for="guestSSID">Nome da Rede Visitante 5G (SSID)</label>
+                    <input type="text" id="guestSSID" placeholder="VISITANTES_5G">
+                </div>
+                <div class="form-group">
+                    <label for="guestSSID">Limite de Dispositivos</label>
+                    <input type="number" id="guestSSID" value="7" name="numero" min="1" max="20">
+                </div>
+                <div class="form-group">
+                    <label for="guestNetworkEnabled">Validade:</label>
+                    <select id="guestNetworkEnabled">
+                        <option value="4h">4 horas</option>
+                        <option value="8h">8 horas</option>
+                        <option value="24h">Sempre</option>
+                    </select>
+                </div>
+                <div class="form-group guest-password-field">
+                    <label for="guestPassword">Senha</label>
+                    <input type="password" id="guestPassword" placeholder="Senha">
+                </div>
+                <div class="form-group">
+                    <label for="guestBandwidthLimit">Banda compartilhada entre os convidados:</label>
+                    <select id="guestNetworkEnabled">
+                        <option value="yes">2 Mbps</option>
+                        <option value="no">4 Mbps</option>
+                        <option value="no">8 Mbps</option>
+                        <option value="no">Ilimitado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+                </div>
+            </form>
+        </section>
+        <!-- Aba Firewall -->
+<section class="tab-content" id="firewall" role="tabpanel">
+    <h2>Configurações do Firewall 🛡️</h2>
+    <form>
+        <div class="form-group">
+            <label for="firewallEnabled">Firewall Ativado:</label>
+            <select id="firewallEnabled" name="firewallEnabled">
+                <option value="enabled">Ativado</option>
+                <option value="disabled">Desativado</option>
+            </select>
+        </div>
+        <h3>Bloqueio de Dispositivos</h3>
+    <form onsubmit="blockDevice(event)">
+        <div class="form-group">
+            <label for="deviceMac">MAC do Dispositivo</label>
+            <input type="text" id="deviceMac" placeholder="00:00:00:00:00:00">
+            <label for="deviceIp">Ip do Dispositivo</label>
+            <input type="text" id="deviceIp" placeholder="192.158.1.38">
+        </div>
+        <button type="submit" class="btn btn-danger">Bloquear Dispositivo</button>
+    </form>
+        <div class="form-group">
+            <label for="portForwarding">Redirecionamento de Portas:</label>
+            <textarea id="portForwarding" name="portForwarding" rows="2" placeholder="Digite as regras de redirecionamento de portas, ex.: 80:80, 443:443"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="dmz">DMZ:</label>
+            <input type="text" id="dmz" name="dmz" placeholder="Digite o IP para a DMZ">
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+    </form>
+</section>
+<!-- Aba Estatísticas -->
+<section class="tab-content" id="stats" role="stats">
+    <h2>Estatísticas 📊</h2>
+    <form>
+        <div class="form-group">
+            <label for="firewallEnabled">Gráfico de Consumo:</label>
+            <canvas id="speedChart" width="400" height="200"></canvas>
+            <table border="1">
+    <tr>
+        <th>Rx/Tx</th>
+        <th>Total Pacotes</th>
+        <th>Total Kbyte(s)</th>
+        <th>KByte/sec</th>
+    </tr>
+    <tr>
+        <td>Enviado (Tx):</td>
+        <td>8,894,375</td>
+        <td>2,022,260</td>
+        <td>27</td>
+    </tr>
+    <tr>
+        <td>Recebido (Rx):</td>
+        <td>26,023,973</td>
+        <td>26,023,973</td>
+        <td>7</td>
+    </tr>
+</table>
+</section>
+        <section class="tab-content" id="configuracoes" role="tabpanel">
+            <h2>Configurações ⚙️</h2>
+            <form>
+                <div class="form-group">
+                    <label for="adminPassword">Senha de Acesso</label>
+                    <input type="text" id="adminPassword" value="GbsNet9009@">
+                    <label for="adminPassword">Alterar Senha de Acesso</label>
+                    <input type="password" id="adminPassword" placeholder="Nova Senha">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+                    </div>
+                </div>
+                <div class="form-group">
+            <label for="autoMaintenance">Ativar Manutenção Automática</label>
+            <select id="autoMaintenance">
+                        <option value="yes">Sim</option>
+                        <option value="no">Não</option>
+        </div>
+        <div class="form-group">
+            <label for="maintenanceTime">Horário da Manutenção</label>
+            <input type="time" id="maintenanceTime" value="03:00">
+        </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-danger" id="restartRouter">Reiniciar Roteador</button>
+                </div>
+                <div class="form-group">
+                    <label for="firmwareUpload">Atualizar Firmware</label>
+                    <input type="file" id="firmwareUpload">
+                    <button type="button" class="btn btn-warning" id="updateFirmware">Atualizar</button>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-info" id="backupSettings">Backup de Configurações</button>
+                </div>
+                <div class="form-group">
+                    <label for="restoreUpload">Restaurar Configurações</label>
+                    <input type="file" id="restoreUpload">
+                    <button type="button" class="btn btn-info" id="restoreSettings">Restaurar</button>
+                </div>
+            </form>
+        </section>
+    </div>
     
-    <!-- Categoria: Básico -->
-    <button onclick="toggleCategory('basico')">Básico</button>
-    <div class="process-column" id="basico" style="display:none;">
-        <button onclick="showPopup('protocolo1')"><strong>Informações</strong></button>
-        <button onclick="showPopup('protocolo7')"><strong>Internet lenta</strong></button>
-        <button onclick="showPopup('protocolo9')"><strong>Config. de roteador</strong></button>
-        <button onclick="showPopup('protocolo12')"><strong>Sem conexão</strong></button>
-        <button onclick="showPopup('protocolo16')"><strong>Mud. de ambiente</strong></button>
-        <button onclick="showPopup('protocolo23')"><strong>Aud. de conexão</strong></button>
+    <button class="btn btn-secondary" id="toggleDarkMode">Modo Escuro 🌑</button>
     </div>
-
-    <!-- Categoria: Financeiro -->
-    <button onclick="toggleCategory('financeiro')">Financeiro</button>
-    <div class="process-column" id="financeiro" style="display:none;">
-        <button onclick="showPopup('protocolo2')"><strong>2ª via de fatura</strong></button>
-        <button onclick="showPopup('protocolo3')"><strong>Info. de pagamento</strong></button>
-        <button onclick="showPopup('protocolo5')"><strong>Alt. de vencimento</strong></button>
-        <button onclick="showPopup('protocolo10')"><strong>Análise de desconto</strong></button>
-        <button onclick="showPopup('protocolo11')"><strong>Neg. de Débitos</strong></button>
-        <button onclick="showPopup('protocolo13')"><strong>Fat. não liquidadas</strong></button>
-        <button onclick="showPopup('protocolo14')"><strong>Contest. de faturas</strong></button>
-    </div>
-
-    <!-- Categoria: Solicitações Contratuais -->
-    <button onclick="toggleCategory('contratuais')">Solicitações Contratuais</button>
-    <div class="process-column" id="contratuais" style="display:none;">
-        <button onclick="showPopup('protocolo4')"><strong>Renov. contratual</strong></button>
-        <button onclick="showPopup('protocolo6')"><strong>Susp. contratual</strong></button>
-        <button onclick="showPopup('protocolo15')"><strong>Alt. de titularidade</strong></button>
-        <button onclick="showPopup('protocolo18')"><strong>Sol. cancelamento</strong></button>
-        <button onclick="showPopup('protocolo19')"><strong>Ret. de comodato</strong></button>
-    </div>
-
-    <!-- Categoria: O.S Suporte Externo -->
-    <button onclick="toggleCategory('suporteExterno')">O.S Suporte Externo</button>
-    <div class="process-column" id="suporteExterno" style="display:none;">
-        <button onclick="showPopup('protocolo8')"><strong>Ord. de Serviço</strong></button>
-        <button onclick="showPopup('protocolo20')"><strong>Mud. de endereço</strong></button>
-        <button onclick="showPopup('protocolo21')"><strong>Ouvidoria</strong></button>
-        <button onclick="showPopup('protocolo22')"><strong>Nota Fiscal</strong></button>
-    </div>
-</section>
-
-<!-- Ferramentas e plataformas -->
-<section id="ferramentas">
-    <h2>Ferramentas do Call Center</h2>
-    <p>Plataformas de uso no dia a dia:</p>
-    <table>
-        <thead>
-            <tr>
-                <th>Plataforma</th>
-                <th>Descrição</th>
-                <th>Link</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>⚙️ Voalle</td>
-                <td>ERP para gestão de processos de telecomunicações.</td>
-                <td><a href="https://erp.gbsn.com.br/" target="_blank">Acessar Voalle</a></td>
-            </tr>
-            <tr>
-                <td>⌨️ Huggy</td>
-                <td>Plataforma de atendimento e chat online.</td>
-                <td><a href="https://www.huggy.app/panel/" target="_blank">Acessar Huggy</a></td>
-            </tr>
-            <tr>
-                <td>📞 Native</td>
-                <td>Ferramenta de gestão de telefonia nativa.</td>
-                <td><a href="https://norte.native-infinity.com.br" target="_blank">Acessar Native</a></td>
-            </tr>
-            <tr>
-                <td>💻 Made4it</td>
-                <td>Sistema de controle de CPE por TR069.</td>
-                <td><a href="https://made4.gbsn.com.br/" target="_blank">Acessar Made4it</a></td>
-            </tr>
-        </tbody>
-    </table>
-
-    <p>Sites do Rodrigo para GBSNET:</p>
-    <table>
-        <thead>
-            <tr>
-                <th>Site</th>
-                <th>Descrição</th>
-                <th>Link</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>📡 Simulador de Roteador</td>
-                <td>Ferramenta para simular configurações de roteadores.</td>
-                <td><a href="https://gbswiki.github.io/router/" target="_blank">Acessar Site</a></td>
-            </tr>
-        </tbody>
-    </table>
-    <h3>Artigos Relacionados</h3>
-    <ul>
-        <li><a href="https://www.reitec.net.br/como-solucionar-problemas-de-conexao-de-internet/" target="_blank">Como resolver problemas de conexão</a></li>
-        <li><a href="https://tiflux.com/atendimento-ao-cliente/" target="_blank">Guia de atendimento ao cliente</a></li>
-        <li><a href="https://bellunotec.com.br/blog/como-lidar-com-objecoes-em-cancelamento-de-servicos/#:~:text=Procure%20se%20colocar%20no%20lugar,realizar%20o%20cancelamento%20do%20servi%C3%A7o." target="_blank">Como lidar com cancelamentos</a></li>
-    </ul>
-</section>
-
-<!-- Roteadores -->
-<section id="conexao">
-    <h2>Conexão</h2>
-    <button onclick="showPopup('router')">Simulador de Roteador</button>
-    <div class="catalogo">
-        <div class="roteador">
-            <a href="https://www.youtube.com/watch?v=PFn0GK8C6Mk&t=22s&pp=ygURcnggMTUwMCBpbnRlbGJyYXM%3D" target="_blank">
-                <img src="https://cdn.awsli.com.br/2561/2561656/produto/231728034/rx-1500-frontal-ir498f20qp.png" alt="RX 1500">
-                <h3>RX 1500</h3>
-                <p>Fabricante: INTELBRAS</p>
-                <p>Ip de acesso: 192.168.2.1</p>
-                <p>Portas: Giga</p>
-            </a>
-            <a href="https://manuais.intelbras.com.br/manual-linha-rx/ChangeLogRX1500.html" target="_blank">Baixar Firmware</a>
-        </div>
-        <div class="roteador">
-            <a href="https://www.youtube.com/watch?v=av3SdMO-ra4" target="_blank">
-                <img src="https://salescdn.net/TWDsbGkzHQ13sOi8KL9aPynuloU=/adaptive-fit-in/500x0/prod/store/13601/medias/product/roteador-wireless-action-rg-1200---giga-7-1672758375998.webp" alt="RG 1200">
-                <h3>RG 1200</h3>
-                <p>Fabricante: INTELBRAS</p>
-                <p>Ip de acesso: 10.0.0.1</p>
-                <p>Portas: Giga</p>
-                <a href="https://www.intelbras.com/pt-br/ajuda-download/faq/roteador-wireless-smart-dual-band-gigabit-action-rg-1200" target="_blank">Baixar Firmware</a>
-            </div>
-            <div class="roteador">
-            <a href="https://www.youtube.com/watch?v=Syboz9otYxY&pp=ygURcmYgMTIwMCBpbnRlbGJyYXM%3D" target="_blank">
-                <img src="https://cdagua.vtexassets.com/arquivos/ids/187270/Roteador-Intelbras-Action-RF-1200-Wi-Fi-5.jpg?v=638361056456300000" alt="RG 1200">
-                <h3>RF 1200</h3>
-                <p>Fabricante: INTELBRAS</p>
-                <p>Ip de acesso: 192.168.2.1</p>
-                <p>Portas: Fast</p>
-                <a href="https://www.intelbras.com/pt-br/ajuda-download/faq/roteador-wireless-smart-dual-band-action-rf-1200" target="_blank">Baixar Firmware</a>
-            </div>
-            <div class="roteador">
-            <a href="https://www.youtube.com/watch?v=6xNB3nZN_rI&pp=ygURZ2YgMTIwMCBpbnRlbGJyYXM%3D" target="_blank">
-                <img src="https://backend.intelbras.com/sites/default/files/2019-11/roteadorGF1200_frontal.png" alt="RX 1500">
-                <h3>GF 1200</h3>
-                <p>Fabricante: INTELBRAS</p>
-                <p>Ip de acesso: 10.0.0.1</p>
-                <p>Portas: Fast</p>
-                <a href="https://manual-bifrost.intelbras.com.br/ChangeLogGF1200.html" target="_blank">Baixar Firmware</a>
-            </div>
-            <div class="roteador">
-            <a href="https://www.youtube.com/watch?v=dx9Sn9IcmoY&pp=ygUJaXdyIDMwMDBu" target="_blank">
-                <img src="https://minasmateriais.com.br/wp-content/uploads/2018/04/roteador_wireless_3000n.png" alt="RG 1200">
-                <h3>IWR 3000N</h3>
-                <p>Fabricante: INTELBRAS</p>
-                <p>Ip de acesso: 192.168.2.1</p>
-                <p>Portas: Fast</p>
-                <a href="https://www.intelbras.com/pt-br/ajuda-download/faq/roteador-wireless-com-ipv6-iwr-3000n" target="_blank">Baixar Firmware</a>
-            </div>
-            <div class="roteador">
-            <a href="https://www.youtube.com/watch?v=SV-XDIfbQmM&pp=ygUGUkYgMzAx" target="_blank">
-                <img src="https://backend.intelbras.com/sites/default/files/styles/large/public/2022-01/Perspectiva-Frontal_1.png" alt="RG 1200">
-                <h3>RF 301 K</h3>
-                <p>Fabricante: INTELBRAS</p>
-                <p>Ip de acesso: 192.168.2.1</p>
-                <p>Portas: Fast</p>
-                <a href="https://www.intelbras.com/pt-br/ajuda-download/faq/roteador-wi-fi-n-300-mpbs-rf-301k" target="_blank">Baixar Firmware</a>
-            </div>
-            <div class="roteador">
-            <a href="https://www.youtube.com/watch?v=Ew5GXooVcaI&pp=ygUNdGVuZGEgYWMxMjAwIA%3D%3D" target="_blank">
-                <img src="https://pic.tendacn.com/pro_pictures/AC8/AC8/1-0.png" alt="RX 1500">
-                <h3>TENDA AC 1200</h3>
-                <p>Fabricante: TENDA</p>
-                <p>Ip de acesso: 192.168.2.1</p>
-                <p>Portas: Giga</p>
-                <a href="https://www.tendacn.com/br/download/list-3.html" target="_blank">Baixar Firmware</a>
-            </div>
-            <div class="roteador">
-            <a href="https://www.youtube.com/watch?v=Ew5GXooVcaI&pp=ygUNdGVuZGEgYWMxMjAwIA%3D%3D" target="_blank">
-                <img src="https://www.shoplivre.com.br/img/products/660/000.png" alt="RG 1200">
-                <h3>MERCUSYS AC 1200</h3>
-                <p>Fabricante: MERCUSYS</p>
-                <p>Ip de acesso: 192.168.1.1</p>
-                <p>Portas: Giga</p>
-                <a href="https://www.mercusys.com.br/download/ac12" target="_blank">Baixar Firmware</a>
-            </div>
-            <div class="roteador">
-            <a href="https://www.youtube.com/watch?v=-aQvzmiPCvk&pp=ygUOaHVhd2VpIGhnODU0Nm0%3D" target="_blank">
-                <img src="https://www.powernetwork.com.br/storage/produtos/February2021/cXnxP6ar5IcMXIZE40sf.webp" alt="RG 1200">
-                <h3>HUAWEI HG8546M0</h3>
-                <p>Fabricante: HUAWEI</p>
-                <p>Ip de acesso: 192.168.2.1</p>
-                <p>Portas: Fast</p>
-                <a href="https://support.huawei.com/enterprise/en/access-network/echolife-hg8546m-pid-21465065/software" target="_blank">Baixar Firmware</a>
-            </div>
-            <div class="roteador">
-            <a href="https://www.youtube.com/watch?v=0LVffkNfUV8&pp=ygUSdzUgMTIwMGYgaW50ZWxicmFz" target="_blank">
-                <img src="https://www.lojamelhordosul.com.br/site/wp-content/uploads/2020/08/Wi-Force-W5-1200F-Intelbras-Roteador.png" alt="RX 1500">
-                <h3>W5 1200F</h3>
-                <p>Fabricante: INTELBRAS</p>
-                <p>Ip de acesso: 192.168.2.1</p>
-                <p>Portas: Fast</p>
-                <a href="https://manual-bifrost.intelbras.com.br/ChangeLogW5_1200F.html" target="_blank">Baixar Firmware</a>
-            </div>
-            <div class="roteador">
-            <a href="https://www.youtube.com/watch?v=Pc8ebN8M0VA&pp=ygUPdHdpYmkgaW50ZWxicmFz" target="_blank">
-                <img src="https://intelbras.vteximg.com.br/arquivos/ids/164535-800-800/twibi_giga_pack.png?v=637852932829700000" alt="RG 1200">
-                <h3>TWIBI</h3>
-                <p>Fabricante: INTELBRAS</p>
-                <p>Ip de acesso: 192.168.5.1</p>
-                <p>Portas: Giga</p>
-                <a href="https://www.intelbras.com/pt-br/ajuda-download/faq/roteador-wi-fi-5-mesh-ac-1200-twibi-giga" target="_blank">Baixar Firmware</a>
-            </div>
-            <div class="roteador">
-            <a href="https://www.youtube.com/watch?v=MC2YE8UPnvM&pp=ygUYd2lmaWJlciAxMjEgYWMgaW50ZWxicmFz" target="_blank">
-                <img src="https://backend.intelbras.com/sites/default/files/2023-09/Perspectiva_frontal_4.png" alt="RG 1200">
-                <h3>WIFIBER</h3>
-                <p>Fabricante: INTELBRAS</p>
-                <p>Ip de acesso: 192.168.1.1</p>
-                <p>Portas: Giga</p>
-                <a href="https://forum.intelbras.com.br/viewtopic.php?f=2729&t=77209" target="_blank">Baixar Firmware</a>
-            </div>
-</section>
-
-        <!-- Materiais de apoio -->
-        <section id="materiais">
-            <div>
-                <h2>Documentos de Apoio</h2>
-        <!-- Caixa de Pesquisa -->
-        <input type="text" id="searchBox" onkeyup="searchMaterials()" placeholder="Pesquisar por material...">
-                <div class="material">
-                    <h3><strong>Tutorial de Troca de Titularidade</strong></h3>
-                    <p>Este tutorial fornece orientações detalhadas sobre como realizar a troca de titularidade de serviços.</p>
-                    <iframe src="https://1drv.ms/b/s!AsFT2-Y-k77wkWio_C0mo14Ii8oK?embed=1&em=2" width="950" height="500" frameborder="0" scrolling="auto"></iframe>
-                    <p>-Ajustar o zoom -----------------------------------------------------------------------------------------------------⬆</p>
-                    <p>-Para baixar uma cópia, clique no ícone "📃" na parte debaixo, na direita do PopUp. --------------------------------⬆</p>
-                    <p>-Visualizar em tela cheia ---------------------------------------------------------------------------------------------------------⬆</p>
+    <div class="form-group">
+                    <button type="button" class="btn btn-info" id="info">Mais informações 💬</button>
                 </div>
-                <div class="material">
-                    <h3><strong>Made4IT - Guia Básico</strong></h3>
-                    <p>Este material explica o funcionamento do Made4IT, uma plataforma que gerencia as CPEs e oferece informações importantes para o atendimento técnico.</p>
-                    <iframe src="https://www.canva.com/design/DAGD7BpYcco/5NoiLKglKlzAcQHmGdbAwQ/view?embed" width="950" height="500" frameborder="0" scrolling="auto"></iframe>
-                </div>
-                <div class="material">
-                    <h3><strong>Renovação Contratual - CRM</strong></h3>
-                    <p>Este material criado por Leandro Lira nos mostra como proceder nos processos de renovação contratual de modo eficaz.</p>
-                    <iframe src="https://www.canva.com/design/DAGR-4ndl8o/-N_j8XI5LvJUIWBoVopg2g/view?embed" width="950" height="500" frameborder="0" scrolling="auto"></iframe>
-                </div>
-                <div class="material">
-                    <h3><strong>Primeiro acesso WATCH</strong></h3>
-                    <p>Tutorial de primeiro acesso da plataforma WATCH</p>
-                    <iframe src="https://www.canva.com/design/DAGSDmOnRjI/kN2yxKFa8s3ofwO7XVHcOA/view?embed" width="950" height="500" frameborder="0" scrolling="auto"></iframe>
-                </div>
-                <div class="material">
-                    <h3><strong>Ativação MAX</strong></h3>
-                    <p>Tutorial de ativação MAX por meio da WATCH</p>
-                    <iframe src="https://www.canva.com/design/DAGSDnr1WVg/QOni4QcuMHYVToo9cRpLUQ/view?embed" width="950" height="500" frameborder="0" scrolling="auto"></iframe>
-                </div>
-                <div class="material">
-                    <h3>CRM Renovação Aurora</h3>
-                    <p>Tutorial de como gerar o protocolo de renovação para o novo plano de Aurora</p>
-                    <iframe src="https://www.canva.com/design/DAGSPWCFFuY/aVY0j2K2cyDsCubPEshQZA/view?embed" width="950" height="500" frameborder="0" scrolling="auto"></iframe>
-                </div>
-            </div>
-        </section>
 
-        <!-- Estilos -->
-        <style>
-            #materiais {
-                padding: 20px;
-                background-color: #f9f9f9;
-            }
-            h2 {
-                text-align: center;
-                font-size: 2em;
-                margin-bottom: 20px;
-            }
-            .material {
-                margin-bottom: 40px;
-            }
-            h3 {
-                font-size: 1.5em;
-                color: #000000;
-            }
-            p {
-                font-size: 1.1em;
-                color: #000000;
-            }
-            iframe {
-                width: 100%;
-                max-width: 950px;
-                height: 500px;
-                margin-top: 10px;
-                border: 1px solid #ddd;
-            }
-            #searchBox {
-                width: 100%;
-                padding: 12px;
-                font-size: 1.2em;
-                margin-bottom: 20px;
-            }
-        </style>
-        </section>
-        
-        <!-- Cancelamentos -->
-        <section id="rev">
-            <h2>Scripts para reversão de Cancelamentos</h2>
-            <div class="accordion">
-                <div class="accordion-item">
-                    <button class="accordion-button" data-pdf="https://1drv.ms/b/s!AsFT2-Y-k77wkXrCh_mf14QSr7E1?embed=1&em=2">🔄Concorrência</button>
-                </div>
-                <div class="accordion-item">
-                    <button class="accordion-button" data-pdf="https://1drv.ms/b/s!AsFT2-Y-k77wkXv8hDsd-SNLQ7uu?embed=1&em=2">🔄Dificuldade Financeira</button>
-                </div>
-                <div class="accordion-item">
-                    <button class="accordion-button" data-pdf="https://1drv.ms/b/s!AsFT2-Y-k77wkXx6kyIxKVWlqalm?embed=1&em=2">🔄Falecimento</button>
-                </div>
-                <div class="accordion-item">
-                    <button class="accordion-button" data-pdf="https://1drv.ms/b/s!AsFT2-Y-k77wkX2HVTbIYSZh7XyC?embed=1&em=2">🔄Insatisfação com a Conexão</button>
-                </div>
-                <div class="accordion-item">
-                    <button class="accordion-button" data-pdf="https://1drv.ms/b/s!AsFT2-Y-k77wkX4Ae92KZMKft75r?embed=1&em=2">🔄Insatisfação com o Atendimento</button>
-                </div>
-                <div class="accordion-item">
-                    <button class="accordion-button" data-pdf="https://1drv.ms/b/s!AsFT2-Y-k77wkX_v8gD3JNGn960l?embed=1&em=2">🔄Mudança de Endereço</button>
-                </div>
-                <h2>Vídeos de apoio (Instituto Nicolas Bueno)</h2>
-                <!-- Primeiro vídeo -->
-                 <h1>Como reverter cancelamentos no Provedor de Internet🔄</h1>
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/eFZEeSMRpJA" 
-                title="YouTube video player 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-                </iframe>
-
-                <!-- Segundo vídeo -->
-                <h1>Principais erros no atendimento nos provedores de Internet❌</h1>
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/dSokG0tLJUQ" 
-                title="YouTube video player 2" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-                </iframe>
-
-                <!-- Terceiro vídeo -->
-                <h1>Como ofertar upgrades para os assinantes do Provedor🆙</h1>
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/PJfOlW3t_W0" 
-                title="YouTube video player 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-                </iframe>
-
-
-            </div>
-        
-            <!-- Modal for PDF -->
-            <div id="pdfModal" class="modal">
-                <div class="modal-content">
-                    <span class="close">&times;</span>
-                    <p>Reversão de Cancelamentos🔄</p>
-                    <iframe id="pdfViewer" src="" width="150%" height="800px"></iframe>
-                    <p>-Ajustar o zoom -----------------------------------------------------------------------------------------------------⬆</p>
-                    <p>-Para baixar uma cópia, clique no ícone "📃" na parte debaixo, na direita do PopUp. --------------------------------⬆</p>
-                    <p>-Visualizar em tela cheia ---------------------------------------------------------------------------------------------------------⬆</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Textos Padrão -->
-        <section id="textos">
-            <h2>Textos Padrão</h2>
-            <div class="opcoes">
-                <div class="opcoes">
-                        <div class="opcao">
-                    <p>Alteração de Titularidade</p>
-                    <button onclick="copiarTexto(&#39;Alteração de Titularidade\n\nMotivo da alteração:\n( ) Óbito\n( ) Mudança de Cidade\n( ) Dif. Financeiras\n( ) Outros\n\nTitular Antigo:\nN° CPF:\nN° RG:\n\nTitular Novo:\nN° CPF:\nN° RG:\nDt. de Nasc.:\nEmail:\nTelefone para contato:\n\nConsulta SPC realizada: [Sim ou Não]\nContrato Fidelidade: [Sim ou Não]&#39;)">Copiar</button>
-                </div>
-                
-                <div class="opcao">
-                    <p>Alteração de Vencimento</p>
-                    <button onclick="copiarTexto('Alteração de vencimento\n\nVencimento atual:\nVencimento para alteração:\nVlr. Diferença de vencimento ($): [isento, a calcular ou R$ 9,65]\nConsultor:')">Copiar</button>
-                </div>
-        
-                <div class="opcao">
-                    <p>Atend. de Rompimento</p>
-                    <button onclick="copiarTexto(&#39;SOLICITAÇÃO DE RETORNO TÉCNICO.\n\nTecnologia: FTTH\nCliente: Residencial\nProblema: Sem Conexão\n\nRelato do cliente: Cliente confirmou LOS vermelho, sem acesso, foi verificado pelo departamento N2 e confirmado rompimento na localidade.\n\nDescrição do problema: Cliente afetado pelo rompimento na localidade, informado sobre o acontecido e prazo de normalização&#39;)">Copiar</button>
-                </div>
-        
-                <div class="opcao">
-                    <p>Configuração de Roteador</p>
-                    <button onclick="copiarTexto(&#39;Configuração de Roteador\n\nTecnologia: FTTH / Wireless\nCliente: Comercial / Residencial\nModelo ou Marca do roteador:\n\nRelato do cliente:\n\nNome do solicitante:\nTelefone do solicitante:&#39;)">Copiar</button>
-                </div>
-        
-                <div class="opcao">
-                    <p>Dados de login App GBSnet</p>
-                    <button onclick="copiarTexto(&#39;Aqui estão seus dados de login do app GBSnet:\nUsuário:\nSenha:&#39;)">Copiar</button>
-                </div>
-        
-                <div class="opcao">
-                    <p>Desconto</p>
-                    <button onclick="copiarTexto(&#39;Motivo: Sem Conexão / Internet lenta\nDatas:\nMelhor Horário pra retorno: Comercial\nCliente solicita desconto pelo período com problemas na conexão&#39;)">Copiar</button>
-                </div>
-        
-                <div class="opcao">
-                    <p>Faturas Não Liquidadas</p>
-                    <button onclick="copiarTexto(&#39;Faturas Não Liquidadas\n\nCliente informa ter efetuado o pagamento via Pix/Deposito\n\nNome do titular:\nFatura:\nVencimento:\nValor:\n\nDados do pagador:\nValor:\nBanco:\nData do pagamento:&#39;)">Copiar</button>
-                </div>
-        
-                <div class="opcao">
-                    <p>Informe de Pagamento</p>
-                    <button onclick="copiarTexto(&#39;Informe de pagamento\nMês:&#39;)">Copiar</button>
-                </div>
-        
-                <div class="opcao">
-                    <p>Informações</p>
-                    <button onclick="copiarTexto(&#39;Cliente solicitou informações sobre:\nInformações repassadas:\nDados Cadastrais Atualizados: SIM (  ) NAO (  )&#39;)">Copiar</button>
-                </div>
-                
-                 <div class="opcao">
-                    <p>Link app GBSnet</p>
-                    <button onclick="copiarTexto('Aqui estão os links para nosso aplicativo ao cliente\n\nAndroid:\nhttps://play.google.com/store/apps/details?id=br.com.portal.gbsnet\nIos:\nhttps://apps.apple.com/br/app/gbsnet/id1660805767')">Copiar</button>
-                </div>
-        
-                <div class="opcao">
-                    <p>Mudança de Endereço</p>
-                    <button onclick="copiarTexto(&#39;Mudança de Endereço\n\nTecnologia: ( ) FTTH ( ) Wireless\nCTO: Porta:\nTipo: ( ) Para Outro Bairro ( ) Para Outra Cidade\nCliente: ( ) Comercial ( ) Residencial\n\nNovo Endereço\nRua:\nNúmero:\nBairro:\nCEP:\nCidade:\nReferência:\nTaxa:\nParcelamento:\n1ª Parcela:\n\nHorário preferencial para ligações:\nHorário preferencial para serviço:&#39;)">Copiar</button>
-                </div>
-        
-                <div class="opcao">
-                    <p>Negociação de Débitos</p>
-                    <button onclick="copiarTexto(&#39;Nome do Cliente:\nReativa:\nCliente SPC:\nNúmero de contato:\nHorário pra Retorno: Comercial\n\nCliente solicita retorno para que possa negociar seus débitos com a empresa.&#39;)">Copiar</button>
-                </div>
-        
-                <div class="opcao">
-                    <p>O.S - Suporte Técnico</p>
-                    <button onclick="copiarTexto(&#39;SOLICITAÇÃO DE RETORNO TÉCNICO.\n\nTecnologia: FTTH/Wireless\nCTO: / PORTA:\nCliente: Comercial/Residencial\nProblema: Sem Conexão\n\nDescrição do problema:\n\nNome do solicitante:\nNumero para retorno:&#39;)">Copiar</button>
-                </div>
-                
-                <div class="opcao">
-                    <p>Ouvidoria</p>
-                    <button onclick="copiarTexto('Ouvidoria\n\nTipo de manifestação:\nTipo de Cliente:\nData de Adesão:\nRelato do cliente:\n\nFone para contato:\nE-mail:\nPeríodo preferencial para contato:')">Copiar</button>
-                </div>
-        
-                <div class="opcao">
-                    <p>Renovação Contratual</p>
-                    <button onclick="copiarTexto(&#39;RENOVAÇÃO CONTRATUAL\n\nPlano Atual:\nPlano Novo:\nValor: R$\nDesconto Pro rata: R$\nValor final: R$\nDesconto Pg. em dia: R$\nValor final: R$\nProporcional: ISENTO\nFidelidade: R$ (          )\n\nINFORMAÇÕES SOBRE OS EQUIPAMENTOS ATUAIS\nTipo: ONU\nNecessidade: \n\nINFORMAÇÕES SOBRE O ROTEADOR\nPorta: GIGA\nTipo de disponibilização: Roteador será cedido em comodato. Compatível com o plano.\n\nCTO:\nPORTA:\n\nOBS:&#39;)">Copiar</button>
-                </div>
-                
-                <div class="opcao">
-                    <p>Reversão de Cancelamento</p>
-                    <button onclick="copiarTexto(&#39;Cancelamento\nNome do titular:\nTecnologia:\nCidade:\nAdesão:\nPlano de acesso:\nFidelidade:\nValor do benefício:\n\nMotivador do Cancelamento:\n-\n-\n-\n\nPropostas oferecidas ao cliente:\n-\n\nOperador de Atendimento:\nData do atendimento:\nCanal de atendimento:\nProtocolo de atendimento:&#39;)">Copiar</button>
-                </div>
-                
-                <div class="opcao">
-                    <p>Relato de Venda</p>
-                    <button onclick="copiarTexto(&#39;Relato da negociação:\n\n\nProposta de Renovação\nPlano Atual:\nPlano Novo:\nValor:\nDesconto Fixo:\nValor final:&#39;)">Copiar</button>
-                </div>
-        
-                <div class="opcao">
-                    <p>Segunda Via de Fatura</p>
-                    <button onclick="copiarTexto(&#39;Fatura encaminhada para o cliente via: Huggy\n\nFatura:\nVencimento:\nValor:&#39;)">Copiar</button>
-                </div>
-        
-                <div class="opcao">
-                    <p>Sem Interação</p>
-                    <button onclick="copiarTexto(&#39;SEM INTERAÇÃO\nCliente foi resgatado da fila de atendimentos, recebeu minha mensagem padrão, porém não houve nenhuma interação no chat por mais de 30 minutos, houve a necessidade de encerramento.&#39;)">Copiar</button>
-                </div>
-        
-                <div class="opcao">
-                    <p>Suspensão Contratual</p>
-                    <button onclick="copiarTexto(&#39;Tecnologia: ( ) FTTH ( ) Wireless\nMotivo: ( ) Viagem ( ) D. financeira ( ) Outro\n\nDescrição: Cliente solicitou a suspensão de seu Contrato pelo prazo estimado de 120 dias.\nRecolher material em comodato instalado no endereço do cliente.\n\nHorário preferencial para ligação:\nhorário preferencial para serviço:\nData limite para retirada:\n\nObservações:\nCTO:\nPorta:\n\nData limite para retirada:\n\nKit comodato Wirelles/FTTH:\n01 Roteador\n01 Antena /ONU\n01 Suporte de Ferro / Conectores Ópticos&#39;)">Copiar</button>
-                </div>
-        
-                <div class="opcao">
-                    <p>Venda de Serviço</p>
-                    <button onclick="copiarTexto(&#39;Venda de Serviço\n\nValor da taxa: R$ 50,00\nLançamento no mês:\nConfiguração:\nLocal: *informar se será na empresa ou residência&#39;)">Copiar</button>
-                </div>
-        
-            </div>
-        </section>
-
-        <section id="cursos">
-            <h2>📚 Cursos Disponibilizados para Aprendizado no Call Center</h2>
-        
-            <!-- GBS Academy -->
-            <div class="curso-section">
-                <h3>GBS Academy</h3>
-                <p>Treinamentos essenciais para o desenvolvimento de habilidades no Call Center:</p>
-                <ul>
-                    <li><a href="https://academy.gbsn.com.br/auth/login?redirect=%2F" target="_blank">🔑 Acessar GBS Academy</a></li>
-                </ul>
-            </div>
-        
-            <!-- Universidade Voalle -->
-            <div class="curso-section">
-                <h3>Universidade Voalle</h3>
-                <p>Capacitação para o uso da plataforma Voalle:</p>
-                <ul>
-                    <li><a href="https://universidadevoalle.com.br/" target="_blank">🎓 Acessar Universidade Voalle</a></li>
-                    <li><a href="https://universidadevoalle.com.br/cursos/cadastros-e-gerenciamento-do-service-desk" target="_blank">🛠️ Cadastro e Gerenciamento do Service Desk</a></li>
-                    <li><a href="https://universidadevoalle.com.br/cursos/cadastros-auxiliares-ao-crm-voalle" target="_blank">📂 Cadastros Auxiliares ao CRM</a></li>
-                    <li><a href="https://universidadevoalle.com.br/biblioteca/292/acessar" target="_blank">⚙️ Conceitos e Configurações do Service Desk</a></li>
-                    <li><a href="https://universidadevoalle.com.br/cursos/i-introducao-ao-crm-voalle" target="_blank">📋 I - Introdução ao CRM</a></li>
-                    <li><a href="https://universidadevoalle.com.br/cursos/ii-configuracoes-do-crm-voalle" target="_blank">🔧 II - Configuração do CRM</a></li>
-                    <li><a href="https://universidadevoalle.com.br/cursos/iii-vendas-no-crm-voalle" target="_blank">💼 III - Vendas no CRM</a></li>
-                    <li><a href="https://universidadevoalle.com.br/cursos/tipos-de-integracoes-no-erpvoalle" target="_blank">🔗 Integrações</a></li>
-                    <li><a href="https://universidadevoalle.com.br/cursos/isp-telecom" target="_blank">📡 ISP Telecom</a></li>
-                    <li><a href="https://universidadevoalle.com.br/cursos/iv-dashboards-do-crm-voalle" target="_blank">📊 IV - Dashboards do CRM</a></li>
-                    <li><a href="https://universidadevoalle.com.br/cursos/processo-de-implantacao" target="_blank">🚀 Processo de Implantação</a></li>
-                    <li><a href="https://universidadevoalle.com.br/cursos/processo-de-materiais" target="_blank">📦 Processo de Materiais</a></li>
-                    <li><a href="https://universidadevoalle.com.br/cursos/processo-faturamento" target="_blank">💰 Processo Faturamento</a></li>
-                    <li><a href="https://universidadevoalle.com.br/cursos/processo-financeiro" target="_blank">💵 Processo Financeiro</a></li>
-                    <li><a href="https://universidadevoalle.com.br/cursos/processo-suite" target="_blank">🏷️ Processo Suíte</a></li>
-                    <li><a href="https://universidadevoalle.com.br/cursos/rede-neutra-fttp" target="_blank">🌐 Rede Neutra - FTTP</a></li>
-                    <li><a href="https://universidadevoalle.com.br/cursos/v-seller" target="_blank">🛒 V - Seller</a></li>
-                    <li><a href="https://universidadevoalle.com.br/cursos/voalle-digital-signature" target="_blank">✍️ Voalle Digital Signature</a></li>
-                </ul>
-                </div>
-        
-            <!-- Curso Intelbras -->
-            <div class="curso-section">
-                <h3>Curso INTELBRAS</h3>
-                <p>Cursos técnicos e administrativos oferecidos pela Intelbras:</p>
-                <ul>
-                    <li><a href="http://cursos.intelbras.com.br" target="_blank">📘 Acessar Curso INTELBRAS</a></li>
-                </ul>
-            </div>
-        
-            <!-- Cursos Administrativos -->
-            <h3>💼 Cursos Administrativos</h3>
-            <ul>
-                <li><a href="https://cursos.intelbras.com.br/portal/layout/927/intelbras/pg_interna_sistema.asp?aW5jbHVkZT1jYXRhbG9nby9jdXJzb3Nfdmlldy5hc3AmQ3Vyc29JRD01ODEzJmt0X2RpZGF4aXM9dG9w" target="_blank">📝 Como atrair e selecionar profissionais</a> - duração: 1 hora</li>
-                <li><a href="https://cursos.intelbras.com.br/portal/layout/927/intelbras/pg_interna_sistema.asp?aW5jbHVkZT1jYXRhbG9nby9jdXJzb3Nfdmlldy5hc3AmQ3Vyc29JRD01NTQwJmt0X2RpZGF4aXM9dG9w" target="_blank">📊 Como criar um plano de comunicação eficiente</a> - duração: 1 hora</li>
-                <li><a href="https://cursos.intelbras.com.br/portal/layout/927/intelbras/pg_interna_sistema.asp?aW5jbHVkZT1jYXRhbG9nby9jdXJzb3Nfdmlldy5hc3AmQ3Vyc29JRD01NDY4Jmt0X2RpZGF4aXM9dG9w" target="_blank">🎯 Qualidade do serviço ao cliente</a> - duração: 2 horas</li>
-                <li><a href="https://cursos.intelbras.com.br/portal/layout/927/intelbras/pg_interna_sistema.asp?aW5jbHVkZT1jYXRhbG9nby9jdXJzb3Nfdmlldy5hc3AmQ3Vyc29JRD01MjA4Jmt0X2RpZGF4aXM9dG9w" target="_blank">✨ Como encantar o cliente</a> - duração: 40 minutos</li>
-                <li><a href="https://cursos.intelbras.com.br/portal/layout/927/intelbras/pg_interna_sistema.asp?aW5jbHVkZT1jYXRhbG9nby9jdXJzb3Nfdmlldy5hc3AmQ3Vyc29JRD01MTUwJmt0X2RpZGF4aXM9dG9w" target="_blank">📈 Quais indicadores escolher e como calcular</a> - duração: 40 minutos</li>
-                <li><a href="https://cursos.intelbras.com.br/portal/layout/927/intelbras/pg_interna_sistema.asp?aW5jbHVkZT1jYXRhbG9nby9jdXJzb3Nfdmlldy5hc3AmQ3Vyc29JRD00NDYxJmt0X2RpZGF4aXM9dG9w" target="_blank">💼 Dicas de pós-venda para provedores</a> - duração: 1 hora</li>
-            </ul>
-        
-            <!-- Cursos Técnicos -->
-            <h3>🔧 Cursos Técnicos</h3>
-            <ul>
-                <li><a href="https://cursos.intelbras.com.br/portal/layout/927/intelbras/pg_interna_sistema.asp?aW5jbHVkZT1jYXRhbG9nby9jdXJzb3Nfdmlldy5hc3AmQ3Vyc29JRD01OTQyJmt0X2RpZGF4aXM9dG9w" target="_blank">🌐 Introdução às redes de computadores</a> - duração: 2 horas</li>
-                <li><a href="https://cursos.intelbras.com.br/portal/layout/927/intelbras/pg_interna_sistema.asp?aW5jbHVkZT1jYXRhbG9nby9jdXJzb3Nfdmlldy5hc3AmQ3Vyc29JRD00NzIzJmt0X2RpZGF4aXM9dG9w" target="_blank">🔌 Fundamentos: redes EPON e GPON</a> - duração: 6 horas</li>
-                <li><a href="https://cursos.intelbras.com.br/portal/layout/927/intelbras/pg_interna_sistema.asp?aW5jbHVkZT1jYXRhbG9nby9jdXJzb3Nfdmlldy5hc3AmQ3Vyc29JRD01NjAyJmt0X2RpZGF4aXM9dG9w" target="_blank">🛠️ Técnico: redes GPON</a> - duração: 4 horas</li>
-                <li><a href="https://cursos.intelbras.com.br/portal/layout/927/intelbras/pg_interna_sistema.asp?aW5jbHVkZT1jYXRhbG9nby9jdXJzb3Nfdmlldy5hc3AmQ3Vyc29JRD00NDIzJmt0X2RpZGF4aXM9dG9w" target="_blank">🔧 Técnico: redes EPON</a> - duração: 8 horas</li>
-                <li><a href="https://cursos.intelbras.com.br/portal/layout/927/intelbras/pg_interna_sistema.asp?aW5jbHVkZT1jYXRhbG9nby9jdXJzb3Nfdmlldy5hc3AmQ3Vyc29JRD00NzE5Jmt0X2RpZGF4aXM9dG9w" target="_blank">📜 Certificação: redes EPON</a> - duração: 8 horas</li>
-            </ul>
-            <!-- Plugin de Comentários -->
-<h3>Comentários</h3>
-<div id="fb-root"></div>
-<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v13.0&appId=463082156784147"></script>
-<div class="fb-comments" data-href="https://gbswiki.github.io/gbswiki" data-width="100%" data-numposts="5"></div>
-        </section>
-
-        <section id="trilha">
-            <h3>Trilha de Integração</h3>
-            <!-- Botão para exibir a primeira apresentação -->
-        <button id="showPresentation1Btn">Treinamento de Integração</button>
-        <!-- Primeira apresentação inicialmente oculta -->
-        <div id="presentation1" style="display:none; position: relative; width: 100%; height: 0; padding-top: 56.2500%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
-        <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
-            src="https://www.canva.com/design/DAGBMcRA4vI/EYVlOq5FDP-LrIjR_HxZ8Q/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
-        </iframe>
-        </div>
-
-        <!-- Botão para exibir a segunda apresentação -->
-        <button id="showPresentation2Btn">Objetivos de um colaborador</button>
-        <!-- Segunda apresentação inicialmente oculta -->
-        <div id="presentation2" style="display:none; position: relative; width: 100%; height: 0; padding-top: 56.2500%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
-        <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
-            src="https://www.canva.com/design/DAGDPZJSmu4/3kLojftj5rStuRbUQ8IV8Q/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
-        </iframe>
-        </div>
-
-        <!-- Botão para exibir a terceira apresentação -->
-        <button id="showPresentation3Btn">Gestão da Reclamação</button>
-        <!-- Terceira apresentação inicialmente oculta -->
-        <div id="presentation3" style="display:none; position: relative; width: 100%; height: 0; padding-top: 56.2500%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
-        <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
-            src="https://www.canva.com/design/DAGDdOTLPr4/ZKpwIZfdMe7YUn47DGsURg/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
-        </iframe>
-        </div>
-
-        <!-- Botão para exibir a quarta apresentação -->
-        <button id="showPresentation4Btn">Trilha de Integração</button>
-        <!-- Quarta apresentação inicialmente oculta -->
-        <div id="presentation4" style="display:none; position: relative; width: 100%; height: 0; padding-top: 70.7071%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
-        <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
-            src="https://www.canva.com/design/DAGRyiqiTTo/Vp3PN7oh3By1nYHKwT4z3w/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
-        </iframe>
-        </div>
-
-        <!-- Botão para exibir a quinta apresentação -->
-         <button id="showPresentation5Btn">Cronograma do Treinamento</button>
-        <!-- Quinta apresentação inicialmente oculta -->
-        <div id="presentation5" style="display:none; position: relative; width:100%; height: 0; padding-top: 70.7071%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
-        <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
-            src="https://www.canva.com/design/DAGSnGiTzRA/0caW2wzgNyqQgE1o40eNuw/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
-        </iframe>
-        </div>
-
-        <!-- Botão para exibir a sexta apresentação -->
-        <button id="showPresentation6Btn">Apresentação dos Roteadores</button>
-        <!-- Sexta apresentação inicialmente oculta -->
-        <div id="presentation6" style="display:none; position: relative; width:100%; height: 0; padding-top: 70.7071%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
-        <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
-            src="https://www.canva.com/design/DAGDc2ZLdss/J-15y83O-BZ3Gl76oeIuUg/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
-        </iframe>
-        </div>
-        <h3>Sobre</h3>
-        <p><strong>Todo o treinamento e ferramentas foram desenvolvido pelo Supervisor Rodrigo S. com o auxílio e consulta dos departamentos, líderes e demais conhecimentos sobre a GbsNet.</strong></p>
-        <p><strong>Demais materiais foram feitos por outros colaboradores que concordaram em ceder os arquivos para a WIKI</strong></p>
-        <!-- Plugin de Comentários -->
-<h3>Comentários</h3>
-<div id="fb-root"></div>
-<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v13.0&appId=463082156784147"></script>
-<div class="fb-comments" data-href="https://gbswiki.github.io/gbswiki" data-width="100%" data-numposts="5"></div>
-        </section>
-
-        <section id="calc">
-            <div class="calc-container">
-                <h2>🧮 Calculadoras</h2>
-                
-                <!-- Calculadora de Multa Rescisória -->
-                <h3>Calculadora de Multa Rescisória</h3>
-                <form id="calculadoraForm" onsubmit="event.preventDefault(); calcularMulta();">
-                    <div class="input-group">
-                        <label for="beneficios">Valor Total dos Benefícios:</label>
-                        <input type="text" id="beneficios" name="beneficios" required oninput="formatarReal(this)">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="totalFidelidade">Total de Meses de Fidelidade:</label>
-                        <input type="number" id="totalFidelidade" name="totalFidelidade" value="12" readonly>
-                    </div>
-        
-                    <div class="input-group">
-                        <label for="mesesRestantes">Meses de Fidelidade Restantes:</label>
-                        <input type="number" id="mesesRestantes" name="mesesRestantes" required min="1" max="12">
-                    </div>
-        
-                    <button type="submit" class="btn-calculate">Calcular Multa</button>
-                </form>
-                <div id="resultado"></div>
-        
-                <!-- Calculadora de Alteração de Vencimento -->
-                <h3>Calculadora de Alteração de Vencimento</h3>
-                <div class="calculators-container">
-                    
-                    <!-- Pré-Pago -->
-                    <div class="calculator">
-                        <div class="pre-pago-title">PRÉ PAGO</div>
-        
-                        <div class="input-group">
-                            <label for="vencAtual">Vencimento Atual:</label>
-                            <input type="number" id="vencAtual" placeholder="Dia do vencimento atual" min="1" max="31" required>
-                        </div>
-        
-                        <div class="input-group">
-                            <label for="vencNovo">Vencimento Novo:</label>
-                            <input type="number" id="vencNovo" placeholder="Dia do vencimento novo" min="1" max="31" required>
-                        </div>
-        
-                        <div class="input-group">
-                            <label for="ultimoVenc">Último Vencimento:</label>
-                            <input type="date" id="ultimoVenc" required>
-                        </div>
-        
-                        <div class="input-group">
-                            <label for="proxVenc">Próximo Vencimento:</label>
-                            <input type="date" id="proxVenc" required>
-                        </div>
-        
-                        <div class="input-group">
-                            <label for="valorPlano">Valor do Plano:</label>
-                            <input type="text" id="valorPlano" placeholder="Valor do plano" required>
-                        </div>
-        
-                        <button class="btn-calculate" onclick="calcular('prePago')">Calcular!</button>
-                        <div id="resultado-prePago"></div>
-                    </div>
-        
-                    <!-- Pós-Pago -->
-                    <div class="calculator">
-                        <div class="pos-pago-title">PÓS PAGO</div>
-        
-                        <div class="input-group">
-                            <label for="vencAtualPos">Vencimento Atual:</label>
-                            <input type="number" id="vencAtualPos" placeholder="Dia do vencimento atual" min="1" max="31" required>
-                        </div>
-        
-                        <div class="input-group">
-                            <label for="vencNovoPos">Vencimento Novo:</label>
-                            <input type="number" id="vencNovoPos" placeholder="Dia do vencimento novo" min="1" max="31" required>
-                        </div>
-        
-                        <div class="input-group">
-                            <label for="ultimoVencPos">Último Vencimento:</label>
-                            <input type="date" id="ultimoVencPos" required>
-                        </div>
-        
-                        <div class="input-group">
-                            <label for="proxVencPos">Próximo Vencimento:</label>
-                            <input type="date" id="proxVencPos" required>
-                        </div>
-        
-                        <div class="input-group">
-                            <label for="valorPlanoPos">Valor do Plano:</label>
-                            <input type="text" id="valorPlanoPos" placeholder="Valor do plano" required>
-                        </div>
-        
-                        <button class="btn-calculate" onclick="calcular('posPago')">Calcular!</button>
-                        <div id="resultado-posPago"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        </section>
-
-        <section id="faq">
-            <h2>❓ Perguntas Frequentes (FAQ)</h2>
-            <p><strong>Aqui você encontra respostas para as dúvidas mais comuns dos nossos colaboradores:</strong></p>
-            <p><strong>Clique nas perguntas para que as respostas aparecam na tela</strong></p>
-            <div>
-                <h3 class="faq-question">📡 Qual o limite aceitável para um sinal óptico?</h3>
-                <p class="faq-answer" style="display:none;">O limite aceitável é de -27 dBm. Se o sinal estiver acima desse valor, é necessário solicitar uma verificação para correção.</p>
-            </div>
-            <div>
-                <h3 class="faq-question">⌛ Qual o tempo limite para aguardar interação no Huggy?</h3>
-                <p class="faq-answer" style="display:none;">O tempo máximo de espera é de até 30 minutos. No entanto, em períodos de alta demanda, esse tempo pode ser reduzido para agilizar os atendimentos.</p>
-            </div>
-            <div>
-                <h3 class="faq-question">🔄 Onde encontro atualizações para um modelo específico de roteador?</h3>
-                <p class="faq-answer" style="display:none;">Você pode encontrar as atualizações no site do fabricante. Para facilitar, acesse a aba de "Roteadores" ao lado da Wiki.</p>
-            </div>
-            <div>
-                <h3 class="faq-question">🔧 O que fazer quando o roteador do cliente está travado após tentar o reset?</h3>
-                <p class="faq-answer" style="display:none;">Valide a situação com o time de Nível 2 (N2). Caso o cliente não tenha renovado recentemente, aproveite para sugerir uma negociação para um novo roteador, seja por venda ou renovação de contrato.</p>
-            </div>
-            <div>
-                <h3 class="faq-question">📊Como realizar um teste de PING na conexão do cliente?</h3>
-                <p class="faq-answer" style="display:none;">Entre no Prompt de comando, digite: ping "ip do cliente" -t e pronto, dessa forma você acompanhará os pacotes de dados enviados para a rede do cliente.</p>
-            </div>
-            <!-- Plugin de Comentários -->
-<h3>Comentários</h3>
-<div id="fb-root"></div>
-<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v13.0&appId=463082156784147"></script>
-<div class="fb-comments" data-href="https://gbswiki.github.io/gbswiki" data-width="100%" data-numposts="5"></div>
-        </section>
-        
-        <!-- Popups do Roteador -->
-        <div id="popup-router" class="popup">
-            <h3>Simulador de roteador📲</h3>
-            <iframe src="https://gbswiki.github.io/router/" frameborder="0" scrolling="auto"></iframe>
-            <button class="close-btn-rout" onclick="closePopup()">Fechar</button>
-        </div>
-
-
-        <!-- Popups dos Protocolos e Departamentos -->
-        <div id="popup-protocolo1" class="popup">
-            <h3>Informações</h3>
-            <img src="https://i.ibb.co/9c0GjVd/informa-es.png" alt="infoimagem" style="height: 400px; vertical-align: middle;">
-            <p>É um protocolo mais “geral” , utilizado em casos onde é apenas repassado alguma informação ou esclarecimento de alguma dúvida do cliente. Exemplos: Planos disponíveis na localidade, qual a velocidade contratada, quantidade de aparelhos conectados na rede, usuário e senha do aplicativo GbsNet, do acesso ao roteador, etc... Também se configura como informações o atendimento que tinha uma natureza específica mas não deu continuidade por alguma razão.</p>
-            <ul>
-                <li>Status: encerramento</li>
-            </ul>                      
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo2" class="popup">
-            <h3>Segunda via de fatura</h3>
-            <img src="https://i.ibb.co/JBqXMrf/segunda.png" alt="svimagem" style="height: 400px; vertical-align: middle;">
-            <p>Este é o tipo de processo destinado ao envio de boletos pelos canais de atendimentos sendo eles por Whatsapp ou email. OBS: Se a fatura estiver vencida com menos de 30 dias pode ser atualizada pelo site do Sicredi (opcional). Se estiver com mais de 30 dias a partir da data de vencimento, será necessário encaminhar para o faturamento atualizar.</p>
-            <ul>
-                <li>Status: encerramento</li>
-            </ul>            
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo3" class="popup">
-            <h3>Informe de pagamento</h3>
-            <img src="https://i.ibb.co/kmRBQbf/informe.png" alt="inimagem" style="height: 400px; vertical-align: middle;">
-            <p>Este processo é gerado para desbloqueio da conexão mediante a apresentação do comprovante de pagamento. 
-                OBS: Torna-se muito necessário validar se os dados do comprovante condizem com o boleto. Se o cliente tiver bloqueado é necessário abrir 2 atendimentos, uma para o informe de pagamento e outro para desbloqueio</p>
-                <ul>
-                    <li>Status: encerramento
-                    <li>Anexar o Comprovante!
-                </ul>                
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo4" class="popup">
-            <h3>Renovação contratual</h3>
-            <img src="https://i.ibb.co/PcVtnp1/RENOVA-O.png" alt="infoimagem" style="height: 400px; vertical-align: middle;">
-            <p>A renovação é um TERMO DE CONCESSÃO CONDICIONAL DE BENEFÍCIOS. O termo faz concessão de descontos e/ou isenção ao CLIENTE de um beneficio, equipamento ou serviço. Exemplo: Desconto pro-rata ou fixo, roteador em comodato ou isenção da taxa de um serviço. O cliente deve estar de acordo com o valor da fidelidade . A fidelidade vale por 12 meses (12 faturas pagas) e o cliente está sujeito a multa rescisória caso cancele antes desse prazo</p>
-            <ul>
-                <li>Status: andamento
-                <li>Encaminhar ao Faturamento
-            </ul>            
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo5" class="popup">
-            <h3>Alteração de vencimento</h3>
-            <img src="https://i.ibb.co/XD5grb5/VENCIMENTO.png" alt="avimagem" style="height: 400px; vertical-align: middle;">
-            <p>Processo destinado quando o cliente deseja alterar a sua data de vencimento. 
-                OBS: Não podendo ser realizado caso o cliente tenha faturas pendentes. Datas disponíveis em ambas as modalidades contratuais: 05, 10, 15, 20, 25 
-                Ao realizar o processo, o cliente deve estar ciente dos valores proporcionais gerados devido a alteração, após isso, o protocolo pode continuar</p>
-                <ul>
-                    <li>Status: andamento
-                    <li>Encaminhar ao Faturamento
-                </ul>
-                <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo6" class="popup">
-            <h3>Suspensão contratual</h3>
-            <img src="https://i.ibb.co/28F9CJJ/SUSPENS-O.png" alt="ssimagem" style="height: 400px; vertical-align: middle;">
-            <p>Já o processo de suspensão contratual é destinado quando o cliente deseja fazer a suspensão dos serviços pelo prazo mínimo de 30 dias e máximo 120 (4 meses). 
-                OBS: O cliente também não pode ter faturas pendentes.
-                O cliente pode fazer a suspensão apenas a cada 12 meses
-                Após isso, deve-se gerar uma Ordem de Serviço (O.S) para que sejam recolhidos os aparelhos em comodato da casa do cliente que optou pela suspensão.</p>
-                <ul>
-                    <li>Status: andamento
-                    <li>Encaminhar ao Faturamento
-                </ul>
-                <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo7" class="popup">
-            <h3>Internet lenta</h3>
-            <img src="https://i.ibb.co/7jXCJsg/LENTA.png" alt="itoimagem" style="height: 400px; vertical-align: middle;">
-            <p>Utilizada quando a solicitação do cliente for Internet Lenta na residência, é sempre necessário fazer a triagem para melhor entendimento do problema. 
-                Exemplo: Desde quando o problema surgiu, rede especifica: 2.4 ou 5G, aplicativo específico, DNS errado, agendamento de Wi-Fi, posição onde o roteador está, números de equipamentos conectados comparados ao plano do cliente, plano desatualizado, roteador que não é compatível ao plano.</p>
-                <ul>
-                    <li>Status: encerramento ou andamento (se for para o N2)</li>
-                </ul>
-                <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo8" class="popup">
-            <h3>Ordem de Serviço (o.s)</h3>
-            <img src="https://i.ibb.co/K2zMmVV/sem-conex-o.png" alt="infdoimagem" style="height: 400px; vertical-align: middle;">
-            <p>A ordem de serviço é destinada quando o cliente informa que está com led vermelho (LOS), equipamento queimado, roteador desconfigurado (e não resolveu com ajuda interna), então é gerado um protocolo e um técnico é redirecionado para a residência dentro do nosso prazo padrão. 
-                Para a abertura da O.S é necessário que alguém valide se o cliente está OFF no sistema (olt), a validação é feita com o suporte técnico interno - N2</p>
-                <ul>
-                    <li>Status: agendamento    
-                    <li>Encaminhar para Equipe Técnica de Campo
-                </ul>                
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo9" class="popup">
-            <h3>Configuração de roteador</h3>
-            <img src="https://i.ibb.co/GdDqTTC/CONFIG-ROTEADOR.png" alt="inwfoimagem" style="height: 400px; vertical-align: middle;">
-            <p>Utilizar este protocolo quando houver necessidade de Auxílio ao cliente para configuração do seu roteador e o mesmo não esteja sem acesso. Como por exemplo, uma Alteração de senha, configuração de DNS, liberação de porta, e demais configurações que possam ser realizadas no roteador do cliente.</p>
-            <ul>
-                <li>Status: encerramento ou andamento (se for para o N2)</li>
-            </ul>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo10" class="popup">
-            <h3>Análise de desconto</h3>
-            <img src="https://i.ibb.co/4pSBbhQ/desconto.png" alt="infyoimagem" style="height: 400px; vertical-align: middle;">
-            <p>Utilizamos esse processo para solicitações de desconto. Com este possuindo 2 tipos de motivos: Internet Lenta e Sem conexão. 
-                É necessário saber com o cliente as datas aproximadas de duração do problema antes de abrir o protocolo. 
-                Vale ressaltar que, o protocolo possui um prazo de até 30 dias para ser analisado e aplicado na fatura subsequente do cliente (não pode ser em fatura vencida)</p>
-                <ul>
-                    <li>Status: andamento
-                    <li>Encaminhar ao N2 para análise técnica
-                </ul>
-                <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo11" class="popup">
-            <h3>Negociação de Débitos</h3>
-            <img src="https://i.ibb.co/1KD61Cx/negocia-o.png" alt="infioimagem" style="height: 400px; vertical-align: middle;">
-            <p>Temos dois modos, que são: Negociação receptiva, que é quando o cliente entra em contato para solicitar que seja realizada uma negociação dos seus débitos em aberto, já a Negociação ativa, é quando o próprio departamento liga para realizar a cobrança. É necessário então encaminhar um protocolo para o departamento. Podendo negociar a partir de 3 faturas vencidas. Sempre validar com o cliente se a negociação é para reativar, suspender ou cancelar.</p>
-            <ul>
-                <li>Status: andamento
-                <li>Encaminhar para a Cobrança
-            </ul>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo12" class="popup">
-            <h3>Sem conexão</h3>
-            <img src="https://i.ibb.co/K2zMmVV/sem-conex-o.png" alt="infloimagem" style="height: 400px; vertical-align: middle;">
-            <p>Utilizada quando a reclamação do cliente for Falta de Conexão no local. Neste caso também é necessário fazer a triagem para identificar o problema. Validar se há Led vermelho, se o nome do wi-fi sumiu, led wi-fi apagada, luzes do roteador ou ONU apagadas, dentre outros detalhes, é também importante verificar se não está com rompimento na CTO do cliente.</p>
-            <ul>
-                <li>Status: andamento ou encerramento (caso resolva)
-            </ul>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo13" class="popup">
-            <h3>Faturas não liquidadas</h3>
-            <img src="https://i.ibb.co/fx1NvJj/faturasnao.png" alt="infddimagem" style="height: 400px; vertical-align: middle;">
-            <p>Utilizar este processo quando o cliente apresentar um comprovante de pagamento que ainda não foi liquidado de forma automática no nosso sistema. 
-            Nesses casos é necessário que também seja gerado e encaminhado um protocolo para que o faturamento possa apurar e validar.</p>
-            <ul>
-                <li>Status: andamento
-                <li>Encaminhar ao Faturamento
-            </ul>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo14" class="popup">
-            <h3>Contestação de faturas</h3>
-            <img src="https://i.ibb.co/GpQ61p0/contesta-o.png" alt="infoiamagem" style="height: 400px; vertical-align: middle;">
-            <p>A contestação de faturas é quando um cliente questiona uma cobrança indevida ou discorda de um valor cobrado. É necessário validar antes se o valor que esta sendo cobrado não esta em algum protocolo informando o motivo. Enquanto o protocolo está em apuração, o cliente pode ficar desbloqueado (se for o caso).</p>
-            <ul>
-                <li>Status: andamento
-                <li>Encaminhar ao Faturamento
-            </ul>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo15" class="popup">
-            <h3>Alteração de titularidade</h3>
-            <img src="https://i.ibb.co/MkhJ6BJ/TITULARIDADE.png" alt="infoimaagem" style="height: 400px; vertical-align: middle;">
-            <p>Processo destinado quando o cliente deseja passar seu contrato para o nome de outra pessoa. Se o cliente tiver fidelidade recente o mesmo só poderá alterar por motivos financeiros, de mudança ou cancelamento. Se não tiver, pode alterar por qualquer razão. Apenas o titular pode solicitar a alteração. Se o CPF do novo titular tiver restrição SPC é cobrado R$100,00 caso não, R$30,00</p>
-            <ul>
-                <li>Status: andamento
-                <li>Encaminhar para Retenção & Ouvidoria
-            </ul>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo16" class="popup">
-            <h3>Mudança de ambiente / configuração de roteador</h3>
-            <img src="https://i.ibb.co/710xwbr/AMBIENTE.png" alt="infoaimagem" style="height: 400px; vertical-align: middle;">
-            <p>Processo destinado quando o cliente deseja mudar seus equipamentos de cômodo na mesma residência.
-                Exemplo: da sala pro quarto.</p>
-                <ul>
-                    <li>Status: Agendamento
-                    <li>Encaminhar a Equipe técnica de campo
-                </ul>
-                <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo17" class="popup">
-            <h3>Vendas de produto</h3>
-            <img src="https://i.ibb.co/DLZRD0r/VENDA-DE-PRODUTO.png" alt="infoiqmagem" style="height: 400px; vertical-align: middle;">
-            <p>É o processo destinado a vendas de equipamentos e produtos. Roteador e Cabos (caso o cliente danifique). Conectores (caso o cliente danifique) OBS: Quando for o caso de Cabos e Conectores o processo será de O.S/Sem conexão, pois o técnico precisa validar o produto danificado. OBS: Caso seja roteador, é necessário validar com o estoque da cidade do cliente quais os roteadores disponíveis antes de prosseguir com o processo.</p>
-            <ul>
-                <li>Status: Agendamento
-                <li>Encaminhar a Equipe técnica de campo
-            </ul>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo18" class="popup">
-            <h3>Solicitação de cancelamento</h3>
-            <img src="https://i.ibb.co/qrJVD0v/CANCELAMENTO.png" alt="infsoimagem" style="height: 400px; vertical-align: middle;">
-            <p>É o processo destinado para a retenção do cliente. Quando o cliente entra em contato solicitando cancelamento do contrato é, missão do atendente tentar reverter o cliente no primeiro contato, mas caso o cliente não aceite, é gerado primeiramente o atendimento de reversão. Então será retornado o contato com o cliente pelo departamento responsável e analisado os motivos que o levaram a optar pelo encerramento do contrato. Estando ciente de todas as solicitações e necessidades do mesmo é feita uma proposta para que o cliente permaneça com os serviços ativos nos novos parâmetros negociados. Quando o cancelamento não é contornado o atendimento de reversão é finalizado e gerado um de Novo Cancelamento.</p>
-            <ul>
-                <li>Status: andamento
-                <li>Encaminhar a Retenção & Ouvidoria
-            </ul>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo19" class="popup">
-            <h3>Retirada de comodato</h3>
-            <img src="https://i.ibb.co/tDgFrSM/retirada.png" alt="ianfoimagem" style="height: 400px; vertical-align: middle;">
-            <p>Suspensão contratual - Processo destinado quando o cliente deseja fazer a suspensão dos serviços Reativação contratual - Processo destinado quando o cliente deseja realizar a reativação dos serviços que estavam suspensos. OBS: Ao gerar a O.S para a instalação dos equipamentos deixar descrito quais equipamentos precisam ser instalados.</p>
-            <ul>
-                <li>Status: Agendamento
-                <li>Encaminhar a Equipe técnica de campo
-            </ul>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo20" class="popup">
-            <h3>Mudança de endereço</h3>
-            <img src="https://i.ibb.co/0r5b9H0/MUDAN-A-DE-ENDERE-O.png" alt="infzoimagem" style="height: 400px; vertical-align: middle;">
-            <p>Nos processos de mudança de endereço e ambiente, o cliente não pode ter faturas de plano pendente. 
-                Para mudança de endereço é preciso do comprovante de residência e a localização do Google Maps para a verificação de viabilidade, caso o cliente não tiver o comprovante, o atendente precisa encaminhar a declaração de endereço.</p>
-                <ul>
-                    <li>Status: Agendamento
-                    <li>Encaminhar a Equipe técnica de campo
-                </ul>
-                <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo21" class="popup">
-            <h3>Ouvidoria</h3>
-            <img src="https://i.ibb.co/6B7jZtF/OUVIDORIA.png" alt="infozimagem" style="height: 400px; vertical-align: middle;">
-            <p>O processo de ouvidoria é um canal de comunicação criado para receber, analisar e dar encaminhamento às reclamações, sugestões, denúncias, elogios ou críticas dos clientes, cidadãos ou colaboradores de uma organização</p>
-            <ul>
-                <li>Status: andamento
-                <li>Encaminhar a Retenção & Ouvidoria
-            </ul>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo22" class="popup">
-            <h3>Nota Fiscal</h3>
-            <img src="https://i.ibb.co/mbwWcDt/nota-fiscal.png" alt="notaimagem" style="height: 400px; vertical-align: middle;">
-            <p>O processo de nota fiscal ocorre quando o cliente solicita a NF e o atendente envia para o solicitante.</p>
-            <ul>
-                <li>Status: Encerramento
-            </ul>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-        <div id="popup-protocolo23" class="popup">
-            <h3>Auditoria de conexão</h3>
-            <img src="https://i.ibb.co/7bzWcx6/AUDITORIA.png" alt="audiimagem" style="height: 400px; vertical-align: middle;">
-            <p>Processo voltado para a averiguação de clientes que estão com contrato em status Normal, mas que estão Offline por mais de 3 dias. Seu objetivo é verificar se estes clientes necessitam de suporte técnico ou não.</p>
-            <ul>
-                <li>Status: Encerramento
-            </ul>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-
-        <!-- Popups dos Departamentos -->
-        <div id="popup-n1" class="popup">
-            <h3>Atendimento Nível 1 (N1)</h3>
-            <img src="https://plugg.to/wp-content/uploads/elementor/thumbs/ilustracao-personalizar-atendimento-ao-cliente-pjybn548s0exq1vi6jbhc3302tzn9t651azmqjy39c.png" alt="Atendimento Nível 1" height="200">
-            <p>O departamento de Atendimento Nível 1 (N1) é o ponto de entrada para a maioria dos colaboradores. Ele é responsável pelo primeiro contato “cliente-empresa”, o que o torna uma parte essencial da operação. Os operadores de telemarketing que trabalham no N1 realizam uma série de atividades importantes, como atendimento de dúvidas, resolução de problemas simples, registro de protocolos, e direcionamento de solicitações para outros setores, caso necessário. O N1 é fundamental para que os colaboradores adquiram experiência com os processos da empresa, preparando-os para lidar com situações mais complexas em outros departamentos.</p>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-
-        <div id="popup-n2" class="popup">
-            <h3>Suporte Técnico Interno – Nível 2 (N2)</h3>
-            <img src="https://www.agoraweb.com.br/wp-content/uploads/2017/11/suporte-remoto-avulso.png" alt="Suporte Técnico N2" height="200">
-            <p>O Suporte Técnico Interno (N2) é responsável por solucionar problemas técnicos de conectividade de forma remota. Os técnicos deste setor lidam com questões como falta de conexão, lentidão na internet, configurações de roteadores e equipamentos dos clientes. Além disso, o N2 dá suporte ao N1 com validações técnicas e lida com notificações de falhas de rede. O diferencial deste departamento é a capacidade de resolver problemas no mesmo dia, agilizando o atendimento e proporcionando maior satisfação ao cliente.</p>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-
-        <div id="popup-comercial" class="popup">
-            <h3>Comercial</h3>
-            <img src="https://edm2.b-cdn.net/blog/wp-content/uploads/2019/10/aa560c85f6f785a9eabfea9a44d2a362.png" alt="Departamento Comercial" height="200">
-            <p>O departamento comercial (CRM) é responsável por novas adesões, promoções, pós venda, Marketing e redes sociais da empresa.</p>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-
-        <div id="popup-financeiro" class="popup">
-            <h3>Faturamento</h3>
-            <img src="https://victon.com.br/system/noticias/foto_capas/000/000/180/grande/Ativo%201.png?1607112483" alt="Faturamento" height="200">
-            <p>O setor de Faturamento é responsável por diversas operações financeiras relacionadas aos clientes. Entre suas atividades, destacam-se o lançamento de faturas, análise de pagamentos, resolução de problemas com mensalidades, mudanças de plano, reativações, cancelamentos e suspensões de contratos. Este departamento também participa de auditorias internas para garantir que todos os processos financeiros sejam conduzidos de forma precisa. Além disso, o Faturamento atua em conjunto com o N1 para resolver questões financeiras apresentadas pelos clientes.</p>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-
-        <div id="popup-negociação" class="popup">
-            <h3>Negociação</h3>
-            <img src="https://cdn-icons-png.flaticon.com/512/5984/5984712.png" alt="Negociação" height="200">
-            <p>O departamento de Negociação tem a função de lidar com clientes inadimplentes, realizando contatos para cobrança via telefone, e-mail ou WhatsApp. Além de negociar dívidas, este setor também é responsável pela recuperação de equipamentos em comodato e pela negativação de débitos quando necessário. O processo de negociação é adaptado para cada cliente, com o objetivo de alcançar uma resolução satisfatória para ambas as partes.</p>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-
-        <div id="popup-pj" class="popup">
-            <h3>Atendimento PJ e Nível 3 (N3)</h3>
-            <img src="https://www.unimed.coop.br/site/documents/329659/0/Bot%C3%A3o-DIREITA.png/f3644763-eab7-1af2-c6ad-f57249273150?t=1685460110775&download=true" alt="Atendimento PJ e N3" height="200">
-            <p>O Atendimento PJ cuida das solicitações feitas por clientes com planos comerciais, tanto em CPF quanto em CNPJ. O Nível 3 (N3) é responsável por resolver problemas de conectividade de forma remota, assim como o N2, mas voltado exclusivamente para clientes comerciais e links dedicados. O atendimento a esses clientes requer um conhecimento mais especializado devido à complexidade das soluções envolvidas.</p>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-
-        <div id="popup-retenção" class="popup">
-            <h3>Retenção e Ouvidoria</h3>
-            <img src="https://www.blip.ai/blog/wp-content/uploads/2021/02/img_retencaodeclientes-300x162.png" alt="Retenção e Ouvidoria" height="200">
-            <p>O setor de Retenção e Ouvidoria é especializado na reversão de solicitações de cancelamento e na análise de termos contratuais. Além disso, este departamento cuida das interações com órgãos como Procon e Anatel, garantindo que as demandas dos clientes sejam atendidas de acordo com as normas legais. A Retenção é responsável por manter os clientes satisfeitos e evitar cancelamentos, enquanto a Ouvidoria atua como canal para a resolução de queixas mais complexas.</p>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-
-        <div id="popup-logi" class="popup">
-            <h3>Logística</h3>
-            <img src="https://i.ibb.co/0hYWvwg/Screenshot-4.png" alt="Screenshot-4" height="550">
-            <p>O setor de Logística é responsável pelo agendamento e organização das Ordens de Serviço (O.S) nas diferentes localidades ou regiões atendidas pela empresa. Esse departamento assegura que os técnicos em campo estejam devidamente alocados para realizar as visitas e reparos de acordo com a demanda de cada área, otimizando os processos e reduzindo o tempo de resposta.</p>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-
-        <div id="popup-pres" class="popup">
-            <h3>Atendimento Presencial</h3>
-            <img src="https://www.movidesk.com/assets/pt-br/img/lps/bg-sistema-de-atendimento-bg.png" alt="Atendimento Presencial" height="200">
-            <p>O Atendimento Presencial é realizado nas unidades físicas da empresa espalhadas pelo estado. Este departamento lida diretamente com os clientes em lojas, oferecendo um suporte mais próximo e humanizado. Seja para consultas, suporte técnico ou questões financeiras, o Atendimento Presencial garante que os clientes recebam a assistência necessária de forma imediata.</p>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-
-        <div id="popup-infra" class="popup">
-            <h3>Infraestrutura</h3>
-            <img src="https://cdn-icons-png.flaticon.com/512/8654/8654558.png" alt="Infraestrutura" height="200">
-            <p> O setor de Infraestrutura é responsável pela manutenção, instalação e ampliação da infraestrutura de rede da empresa. Eles garantem que a rede esteja operando de forma eficiente e confiável, minimizando interrupções e otimizando a conectividade para todos os clientes. O trabalho desse departamento é fundamental para a operação contínua e segura da rede de telecomunicações.</p>
-            <button class="close-btn" onclick="closePopup()">Fechar</button>
-        </div>
-
-            
-        <script>
-            function copiarTexto(texto) {
-            const areaDeTexto = document.createElement('textarea');
-            areaDeTexto.value = texto;
-
-            document.body.appendChild(areaDeTexto);
-
-            areaDeTexto.select();
-            areaDeTexto.setSelectionRange(0, 99999);
-
-            document.execCommand('copy');
-
-            document.body.removeChild(areaDeTexto);
-
-            alert('Seu texto foi copiado com sucesso!');
-        }
-            function showSection(sectionId) {
-                var sections = document.querySelectorAll('section');
-                sections.forEach(function(section) {
-                    section.classList.remove('active');
-                });
-                var sectionToShow = document.getElementById(sectionId);
-                sectionToShow.classList.add('active');
-            }
-        
-            function showPopup(id) {
-                var popup = document.getElementById('popup-' + id);
-                popup.classList.add('active');
-            }
-        
-            function closePopup() {
-                var popups = document.querySelectorAll('.popup');
-                popups.forEach(function(popup) {
-                    popup.classList.remove('active');
-                });
-            }
-
-            function formatarReal(input) {
-    var valor = input.value.replace(/\D/g, '');
-    valor = (valor / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    input.value = valor;
-  }
-
-  function copiarResultado() {
-    var resultadoElement = document.getElementById('resultado');
-    var multa = resultadoElement.dataset.multa;
-
-    var valorFormatado = parseFloat(multa).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-    var inputTemp = document.createElement('input');
-    inputTemp.value = valorFormatado;
-
-    document.body.appendChild(inputTemp);
-
-    inputTemp.select();
-    inputTemp.setSelectionRange(0, 99999);
-
-    document.execCommand('copy');
-
-    document.body.removeChild(inputTemp);
-
-    alert("O resultado foi copiado com sucesso!");
-  }
-
-  function calcularMulta() {
-    var beneficios = parseFloat(document.getElementById('beneficios').value.replace(/\D/g, '')) / 100;
-    var totalFidelidade = 12;
-    var mesesRestantes = parseInt(document.getElementById('mesesRestantes').value);
-
-    if (isNaN(beneficios) || isNaN(mesesRestantes)) {
-      alert("Por favor, insira valores válidos.");
-      return;
-    }
-
-    var multa = (beneficios / totalFidelidade) * mesesRestantes;
-
-    var resultadoElement = document.getElementById('resultado');
-    resultadoElement.innerHTML = "Multa Rescisória: " + multa.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    resultadoElement.dataset.multa = multa;
-    resultadoElement.style.display = 'block';
-  }
-
-  function calcular(tipo) {
-            var vencAtual, vencNovo, ultimoVenc, proxVenc, valorPlano, resultadoDivId;
-
-            if (tipo === 'prePago') {
-                vencAtual = parseInt(document.getElementById("vencAtual").value);
-                vencNovo = parseInt(document.getElementById("vencNovo").value);
-                ultimoVenc = new Date(document.getElementById("ultimoVenc").value);
-                proxVenc = new Date(document.getElementById("proxVenc").value);
-                valorPlano = parseFloat(document.getElementById("valorPlano").value);
-                resultadoDivId = "resultado-prePago";
-            } else if (tipo === 'posPago') {
-                vencAtual = parseInt(document.getElementById("vencAtualPos").value);
-                vencNovo = parseInt(document.getElementById("vencNovoPos").value);
-                ultimoVenc = new Date(document.getElementById("ultimoVencPos").value);
-                proxVenc = new Date(document.getElementById("proxVencPos").value);
-                valorPlano = parseFloat(document.getElementById("valorPlanoPos").value);
-                resultadoDivId = "resultado-posPago";
-            }
-
-            
-            if (vencAtual < 1 || vencAtual > 31 || vencNovo < 1 || vencNovo > 31) {
-                alert("Por favor, insira valores de vencimento entre 1 e 31.");
-                return;
-            }
-
-            var diasProporcionais = Math.floor(Math.abs((proxVenc - ultimoVenc) / (24 * 60 * 60 * 1000)));
-
-            var valorProporcional = (valorPlano / 30) * diasProporcionais;
-
-            var total = valorPlano + valorProporcional;
-
-            var resultadoDiv = document.getElementById(resultadoDivId);
-            resultadoDiv.innerHTML = "<p><strong>Valor do Plano:</strong> R$ " + valorPlano.toFixed(2) + "</p>";
-            resultadoDiv.innerHTML += "<p><strong>Dias Proporcionais:</strong> " + diasProporcionais + "</p>";
-            resultadoDiv.innerHTML += "<p><strong>Valor Proporcional:</strong> R$ " + valorProporcional.toFixed(2) + "</p>";
-            resultadoDiv.innerHTML += "<p><strong>Total:</strong> R$ " + total.toFixed(2) + "</p>";
-
-            var faturasDiv = document.createElement("div");
-            faturasDiv.innerHTML = "<p><strong>Relação de Faturas:</strong></p>";
-            
-            var formattedUltimoVenc = ultimoVenc.toLocaleDateString(undefined, { timeZone: 'UTC' });
-            var formattedProxVenc = proxVenc.toLocaleDateString(undefined, { timeZone: 'UTC' });
-
-            faturasDiv.innerHTML += "<p>" + formattedUltimoVenc + " - R$ " + valorPlano.toFixed(2) + "</p>";
-            faturasDiv.innerHTML += "<p>" + formattedProxVenc + " - R$ " + valorProporcional.toFixed(2) + "</p>";
-            faturasDiv.innerHTML += "<p>ou</p>";
-            faturasDiv.innerHTML += "<p>" + formattedProxVenc + " - R$ " + total.toFixed(2) + "</p>";
-
-            resultadoDiv.appendChild(faturasDiv);
-            var resultadoDiv = document.getElementById(resultadoDivId);
-            var botaoCopiar = document.createElement("button");
-            botaoCopiar.innerHTML = "Copiar Resultado";
-            botaoCopiar.addEventListener("click", function () {
-                copiarResultado(resultadoDiv);
-            });
-
-            resultadoDiv.appendChild(botaoCopiar);
-        }
-
-        function copiarResultado(elemento) {
-
-            var selecionar = window.getSelection();
-            var intervalo = document.createRange();
-            intervalo.selectNodeContents(elemento);
-            selecionar.removeAllRanges();
-            selecionar.addRange(intervalo);
-
-            document.execCommand('copy');
-
-            selecionar.removeAllRanges();
-
-            alert("Seu cálculo foi copiado com sucesso! Mostre ao cliente e cole no atendimento!");
-        }
-        
-            function filtrarProtocolos() {
-                let input = document.getElementById('pesquisaProtocolo');
-                let filtro = input.value.toLowerCase();
-                let protocolos = document.querySelectorAll('#protocolos .process-column button');
-        
-                protocolos.forEach(function(protocolo) {
-                    let texto = protocolo.textContent || protocolo.innerText;
-                    if (texto.toLowerCase().indexOf(filtro) > -1) {
-                        protocolo.style.display = "";
-                    } else {
-                        protocolo.style.display = "none";
-                    }
-                });
-            }
-            document.querySelectorAll('.accordion-button').forEach(button => {
-        button.addEventListener('click', function() {
-            const pdfFile = this.getAttribute('data-pdf');
-            const modal = document.getElementById("pdfModal");
-            const pdfViewer = document.getElementById("pdfViewer");
-
-            pdfViewer.src = pdfFile;
-            modal.style.display = "block";
-        });
-    });
-
-    document.querySelector('.close').addEventListener('click', function() {
-        document.getElementById("pdfModal").style.display = "none";
-    });
-
-    window.onclick = function(event) {
-        const modal = document.getElementById("pdfModal");
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-    function toggleCategory(categoryId) {
-    var element = document.getElementById(categoryId);
-    if (element.style.display === "none") {
-        element.style.display = "block";
-    } else {
-        element.style.display = "none";
-    }
-}
-// Funções para exibir ou ocultar cada apresentação
-  document.getElementById("showPresentation1Btn").onclick = function() {
-    var presentationDiv1 = document.getElementById("presentation1");
-    presentationDiv1.style.display = (presentationDiv1.style.display === "none") ? "block" : "none";
-  }
-
-  document.getElementById("showPresentation2Btn").onclick = function() {
-    var presentationDiv2 = document.getElementById("presentation2");
-    presentationDiv2.style.display = (presentationDiv2.style.display === "none") ? "block" : "none";
-  }
-
-  document.getElementById("showPresentation3Btn").onclick = function() {
-    var presentationDiv3 = document.getElementById("presentation3");
-    presentationDiv3.style.display = (presentationDiv3.style.display === "none") ? "block" : "none";
-  }
-
-  document.getElementById("showPresentation4Btn").onclick = function() {
-    var presentationDiv4 = document.getElementById("presentation4");
-    presentationDiv4.style.display = (presentationDiv4.style.display === "none") ? "block" : "none";
-  }
-  
-  document.getElementById("showPresentation5Btn").onclick = function() {
-    var presentationDiv5 = document.getElementById("presentation5");
-    presentationDiv5.style.display = (presentationDiv5.style.display === "none") ? "block" : "none";
-  }
-  
-  document.getElementById("showPresentation6Btn").onclick = function() {
-    var presentationDiv6 = document.getElementById("presentation6");
-    presentationDiv6.style.display = (presentationDiv6.style.display === "none") ? "block" : "none"; 
-  }
-  function searchMaterials() {
-        var input, filter, materials, material, h3, i, txtValue;
-        input = document.getElementById("searchBox");
-        filter = input.value.toLowerCase();
-        materials = document.getElementsByClassName("material");
-
-        for (i = 0; i < materials.length; i++) {
-            h3 = materials[i].getElementsByTagName("h3")[0];
-            txtValue = h3.textContent || h3.innerText;
-            if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                materials[i].style.display = "";
+    <script>
+        const correctPassword = 'GbsNet9009';
+
+        document.getElementById('login-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const password = document.getElementById('password').value;
+            if (password === correctPassword) {
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
             } else {
-                materials[i].style.display = "none";
+                document.getElementById('login-error').textContent = 'Senha incorreta. Tente novamente.';
+            }
+        });
+        // Navegação entre abas
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+                this.classList.add('active');
+                document.getElementById(this.getAttribute('data-tab')).classList.add('active');
+            });
+        });
+
+        // Contador fictício para o tempo ativo do sistema
+        function startUptimeCounter() {
+            let seconds = 0;
+            let minutes = 0;
+            let hours = 0;
+
+            function updateCounter() {
+                seconds++;
+                if (seconds === 60) {
+                    seconds = 0;
+                    minutes++;
+                }
+                if (minutes === 60) {
+                    minutes = 0;
+                    hours++;
+                }
+                document.getElementById('uptime').textContent =
+                    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
+
+            setInterval(updateCounter, 1000);
+        }
+
+        window.onload = startUptimeCounter;
+
+        // Mostrar/ocultar campos PPPoE
+        document.getElementById('connectionType').addEventListener('change', function() {
+            const pppoeFields = document.querySelector('.pppoe-fields');
+            if (this.value === 'pppoe') {
+                pppoeFields.style.display = 'block';
+            } else {
+                pppoeFields.style.display = 'none';
+            }
+        });
+
+        // Mostrar/ocultar campo de senha WiFi
+        document.getElementById('wifiSecurity').addEventListener('change', function() {
+            const wifiPasswordField = document.querySelector('.wifi-password-field');
+            if (this.value === 'none') {
+                wifiPasswordField.style.display = 'none';
+            } else {
+                wifiPasswordField.style.display = 'block';
+            }
+        });
+
+        // Mostrar/ocultar campo de senha Rede de Visitantes
+        document.getElementById('guestNetworkEnabled').addEventListener('change', function() {
+            const guestPasswordField = document.querySelector('.guest-password-field');
+            if (this.value === 'no') {
+                guestPasswordField.style.display = 'none';
+            } else {
+                guestPasswordField.style.display = 'block';
+            }
+        });
+
+        // Funções de Configurações Avançadas
+        document.getElementById('restartRouter').addEventListener('click', function() {
+            alert('O roteador será reiniciado.');
+            // Adicionar lógica para reiniciar o roteador aqui
+        });
+
+        document.getElementById('updateFirmware').addEventListener('click', function() {
+            const fileInput = document.getElementById('firmwareUpload');
+            if (fileInput.files.length > 0) {
+                alert('Atualizando firmware...');
+                // Adicionar lógica para atualizar firmware aqui
+            } else {
+                alert('Por favor, selecione um arquivo de firmware.');
+            }
+        });
+
+        document.getElementById('backupSettings').addEventListener('click', function() {
+            alert('O Backup das configurações foi realizado');
+            // Adicionar lógica para backup aqui
+        });
+        
+        document.getElementById('devices').addEventListener('click', function() {
+    alert('S20 de Rodrigo📱\nIP: 10.0.0.106\nMAC: 12:85:8D:AF:90:61\n\nGalaxy-A05s📱\nIP: 10.0.0.145\nMAC: 13:95:8E:AB:90:61\n\nTv da Sala🖥\nIP: 10.8.0.183\nMAC: 13:75:8H:AB:85:61');
+});
+
+document.getElementById('info').addEventListener('click', function() {
+    alert('Contate-me pelo Telegram: https://t.me/rodrigo_rsn');
+});
+
+        document.getElementById('restoreSettings').addEventListener('click', function() {
+            const fileInput = document.getElementById('restoreUpload');
+            if (fileInput.files.length > 0) {
+                alert('Restaurando configurações...');
+                // Adicionar lógica para restaurar configurações aqui
+            } else {
+                alert('Por favor, selecione um arquivo de backup.');
+            }
+        });
+
+        // Alternância do Modo Escuro
+        document.getElementById('toggleDarkMode').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+        });
+
+        // Validação do formulário
+        function validateForm(event) {
+            event.preventDefault();
+            alert('Configurações salvas com sucesso!');
+        }
+        function startNetworkUsageSimulator() {
+    function getRandomSpeed() {
+        return (Math.random() * 100).toFixed(2);
+    }
+
+    function updateNetworkUsage() {
+        document.getElementById('downloadSpeed').textContent = `${getRandomSpeed()} Mbps`;
+        document.getElementById('uploadSpeed').textContent = `${getRandomSpeed()} Mbps`;
+    }
+
+    setInterval(updateNetworkUsage, 1500);
+}
+
+window.onload = function() {
+    startUptimeCounter();
+    startNetworkUsageSimulator();
+};
+
+function validateParentalControlForm(event) {
+    event.preventDefault();
+    const parentalControlStatus = document.getElementById('parentalControlStatus').checked;
+    const restrictedSites = document.getElementById('restrictedSites').value;
+
+    if (parentalControlStatus && !restrictedSites) {
+        alert('Por favor, adicione pelo menos um site restrito.');
+        return;
+    }
+
+    alert('Configurações de Controle Parental salvas com sucesso!');
+}
+
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
+    });
+});
+function blockDevice(event) {
+    event.preventDefault();
+    const deviceMac = document.getElementById('deviceMac').value.trim();
+
+    if (!deviceMac) {
+        alert('Por favor, insira o MAC do Dispositivo.');
+        return;
+    }
+
+    let blockedDevices = JSON.parse(localStorage.getItem('blockedDevices')) || [];
+    if (blockedDevices.includes(deviceMac)) {
+        alert('Dispositivo já está bloqueado.');
+        return;
+    }
+
+    blockedDevices.push(deviceMac);
+    localStorage.setItem('blockedDevices', JSON.stringify(blockedDevices));
+    updateBlockedDevicesList();
+
+    document.getElementById('deviceMac').value = '';
+}
+
+function unblockDevice(deviceMac) {
+    let blockedDevices = JSON.parse(localStorage.getItem('blockedDevices')) || [];
+    blockedDevices = blockedDevices.filter(mac => mac !== deviceMac);
+    localStorage.setItem('blockedDevices', JSON.stringify(blockedDevices));
+    updateBlockedDevicesList();
+}
+
+function updateBlockedDevicesList() {
+    const blockedDevices = JSON.parse(localStorage.getItem('blockedDevices')) || [];
+    const blockedDevicesList = document.getElementById('blockedDevicesList');
+    blockedDevicesList.innerHTML = '';
+
+    blockedDevices.forEach(deviceMac => {
+        const li = document.createElement('li');
+        li.textContent = deviceMac;
+        const unblockButton = document.createElement('button');
+        unblockButton.textContent = 'Desbloquear';
+        unblockButton.className = 'btn btn-secondary ml-2';
+        unblockButton.onclick = () => unblockDevice(deviceMac);
+        li.appendChild(unblockButton);
+        blockedDevicesList.appendChild(li);
+    });
+}
+const ctx = document.getElementById('speedChart').getContext('2d');
+
+const speedChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [], // Mantém isso vazio
+        datasets: [
+            {
+                label: 'Download (Mbps)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                data: [],
+                fill: true,
+            },
+            {
+                label: 'Upload (Mbps)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                data: [],
+                fill: true,
+            }
+        ]
+    },
+    options: {
+        scales: {
+            x: {
+                display: false,  // Desativa o eixo x
+            },
+            y: {
+                beginAtZero: true
             }
         }
     }
-    document.querySelectorAll('.faq-question').forEach(item => {
-        item.addEventListener('click', () => {
-            const answer = item.nextElementSibling;
-            answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
-        });
-    });
-        
-            showSection('introducao');
-        </script>
+});
+
+function updateChart(downloadSpeed, uploadSpeed) {
+    const time = Date.now();
+
+    // Adiciona novo ponto de dados
+    speedChart.data.labels.push(time);
+    speedChart.data.datasets[0].data.push(downloadSpeed);
+    speedChart.data.datasets[1].data.push(uploadSpeed);
+
+    // Remove dados antigos (manter, por exemplo, 20 pontos de dados)
+    if (speedChart.data.labels.length > 40) {
+        speedChart.data.labels.shift();
+        speedChart.data.datasets[0].data.shift();
+        speedChart.data.datasets[1].data.shift();
+    }
+
+    // Atualiza o gráfico
+    speedChart.update();
+}
+
+// Simulação de dados (substitua isso pela lógica real)
+setInterval(() => {
+    const downloadSpeed = Math.random() * 100;
+    const uploadSpeed = Math.random() * 50;
+
+    updateChart(downloadSpeed, uploadSpeed);
+}, 1000);
+
+    </script>
+</body>
+</html>
